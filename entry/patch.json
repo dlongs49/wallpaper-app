@@ -1,0 +1,11 @@
+{
+  "app": {
+    "bundleName": "com.example.wallpaper_app",
+    "patchVersionCode": 2000005,
+    "versionCode": 1000000
+  },
+  "module": {
+    "name": "entry",
+    "type": "hotreload"
+  }
+}
