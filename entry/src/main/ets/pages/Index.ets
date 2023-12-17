@@ -5,7 +5,7 @@ struct Index {
   @State selectedFontColor: string = '#e6dd23'
   @State currentIndex: number = 0
   private controller: TabsController = new TabsController()
-  @State list: Array<string> = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+  @State list: Array<string> = ['', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '']
   scroller: Scroller = new Scroller()
 
   @Builder TabBuilder(index: number, title: string) {
@@ -28,58 +28,45 @@ struct Index {
     Column() {
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
         TabContent() {
-            WaterFlow({ scroller: this.scroller }) {
-              ForEach(this.list, (item: string,index:number) => {
-                FlowItem() {
-                  Column(){
-                    if(index === 0){
-                      Row() {
-                        Image("https://www.dillonl.com/u/demo.png").width(110).height(50).borderRadius(10)
-                        Text("热门IP壁纸").offset({ x: -90, y: 2 }).fontColor(0xffffff)
-                      }.width(110).height(50).margin({ bottom: 14 })
-                    }
-                    Column() {
-                      Image("https://www.dillonl.com/u/demo.png").width("100%").height(320).borderRadius(10)
-                      Text("自然风光").fontSize(14).margin({ top: '5' })
-                      Text("9张").fontSize(12).fontColor(0xffcccccc).margin({ top: 5 })
-                    }.width("100%").alignItems(HorizontalAlign.Start)
-                  }.alignItems(HorizontalAlign.Start)
+          Grid(this.scroller){
+            ForEach(this.list,(item)=>{
+              GridItem(){
+                Stack({ alignContent: Alignment.TopStart }){
+                  Image("https://www.dillonl.com/u/demo.png").borderRadius(12).width('100%')
+                  Text("中国风").fontColor(0xffffffff).fontSize(18).markAnchor({ x: -14, y: -20 })
+                }.width('48.5%')
+              }
+            })
 
-                }.width("50%").margin({ bottom: 18 })
-
-              })
-
-            }.width('95%').height('100%').layoutDirection(FlexDirection.Column).columnsTemplate("1fr 1fr").columnsGap(12)
+          }.columnsTemplate("lfr lfr").columnsGap(10).rowsGap(10).width("94%")
         }.tabBar(this.TabBuilder(0, '首页'))
 
         TabContent() {
-          Column() {
-            Text('Tab2')
-              .fontSize(36)
-              .fontColor('#182431')
-              .fontWeight(500)
-              .opacity(0.4)
-              .margin({ top: 30, bottom: 56.5 })
-            Divider()
-              .strokeWidth(0.5)
-              .color('#182431')
-              .opacity(0.05)
-          }.width('100%')
+          WaterFlow({ scroller: this.scroller }) {
+            ForEach(this.list, (item: string,idx:number) => {
+              FlowItem() {
+                Column(){
+                  if(idx === 0){
+                    Row() {
+                      Image("https://www.dillonl.com/u/demo.png").width(110).height(50).borderRadius(10)
+                      Text("热门IP壁纸").offset({ x: -90, y: 2 }).fontColor(0xffffff)
+                    }.width(110).height(50).margin({ bottom: 14 })
+                  }
+                  Column() {
+                    Image("https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg?auto=compress&cs=tinysrgb&w=600").width("100%").height(320).borderRadius(10).backgroundColor(0xffdbdbdb)
+                    Text("自然风光").fontSize(14).margin({ top: '5' })
+                    Text("9张").fontSize(12).fontColor(0xffcccccc).margin({ top: 5 })
+                  }.width("100%").alignItems(HorizontalAlign.Start)
+                }.alignItems(HorizontalAlign.Start)
+              }.width("50%").margin({ bottom: 18 })
+
+            }, item => item)
+
+          }.width('95%').height('100%').layoutDirection(FlexDirection.Column).columnsTemplate("1fr 1fr").columnsGap(12)
         }.tabBar(this.TabBuilder(1, '分类'))
 
         TabContent() {
-          Column() {
-            Text('Tab3')
-              .fontSize(36)
-              .fontColor('#182431')
-              .fontWeight(500)
-              .opacity(0.4)
-              .margin({ top: 30, bottom: 56.5 })
-            Divider()
-              .strokeWidth(0.5)
-              .color('#182431')
-              .opacity(0.05)
-          }.width('100%')
+
         }.tabBar(this.TabBuilder(2, '我的'))
       }
       .vertical(false)
