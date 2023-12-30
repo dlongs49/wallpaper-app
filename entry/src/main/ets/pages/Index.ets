@@ -33,7 +33,7 @@ struct Index {
   }
 
   build() {
-    Column() {
+    Navigation() {
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
         TabContent() {
           if (this.currentIndex == 0) {
@@ -134,6 +134,6 @@ struct Index {
       })
       .width('100%')
       .height('100%')
-    }.width('100%').height('100%')
+    }.width('100%').height('100%').titleMode(NavigationTitleMode.Mini).hideBackButton(true)
   }
 }
