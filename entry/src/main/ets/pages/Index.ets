@@ -15,7 +15,9 @@ struct Index {
   ]
   scroller: Scroller = new Scroller()
   home_scroller: Scroller = new Scroller()
-
+  @Builder NavigationTitle() {
+    Column() {}.backgroundColor(this.currentIndex == 2 ? 0xe9e5fb : '').height(52).width("100%")
+  }
   @Builder TabBuilder(index: number, title: string) {
 
     Column() {
@@ -33,7 +35,9 @@ struct Index {
   }
 
   build() {
+
     Navigation() {
+      this.NavigationTitle()
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
         TabContent() {
           if (this.currentIndex == 0) {
@@ -100,7 +104,7 @@ struct Index {
                   .borderRadius(60)
                   .backgroundColor(0xfff4f4f4)
                 Text("冰消叶散").fontWeight(FontWeight.Bold).fontSize(18).margin({ top: 10 })
-              }.height(80)
+              }.height(100).margin({top:50})
             List() {
               ForEach(this.opearList, (item) => {
                 ListItem() {
@@ -117,7 +121,11 @@ struct Index {
 
             }.width("90%").margin({top:50})
             Button('退出登录', { type: ButtonType.Capsule, stateEffect: true }).backgroundColor(0xa99ee9).width("90%")
-          }.justifyContent(FlexAlign.Start).height("100%").width("100%")
+          }.justifyContent(FlexAlign.Start).height("100%").width("100%").linearGradient({
+            direction: GradientDirection.Top,
+            angle: 180,
+            colors: [[0xe9e5fb, 0.0],[0xffffff, 0.5], [0xffffff, 1.0]]
+          })
         }.tabBar(this.TabBuilder(2, '我的'))
       }
       .vertical(false)
@@ -133,7 +141,7 @@ struct Index {
         this.currentIndex = index
       })
       .width('100%')
-      .height('100%')
-    }.width('100%').height('100%').titleMode(NavigationTitleMode.Mini).hideBackButton(true)
+      .height('94%')
+    }.width('100%').height('100%').hideTitleBar(true)
   }
 }
