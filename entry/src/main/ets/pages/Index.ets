@@ -5,8 +5,9 @@ struct Index {
   @State selectedFontColor: string = '#e6dd23'
   @State currentIndex: number = 0
   private controller: TabsController = new TabsController()
-  @State list: Array<string> = ['', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '']
+  @State list: Array<string> = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',]
   scroller: Scroller = new Scroller()
+  home_scroller: Scroller = new Scroller()
 
   @Builder TabBuilder(index: number, title: string) {
 
@@ -28,41 +29,56 @@ struct Index {
     Column() {
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
         TabContent() {
-          Grid(this.scroller){
-            ForEach(this.list,(item)=>{
-              GridItem(){
-                Stack({ alignContent: Alignment.TopStart }){
-                  Image("https://www.dillonl.com/u/demo.png").borderRadius(12).width('100%')
-                  Text("中国风").fontColor(0xffffffff).fontSize(18).markAnchor({ x: -14, y: -20 })
-                }.width('48.5%')
-              }
-            })
+          if (this.currentIndex == 0) {
+            WaterFlow({ scroller: this.scroller }) {
+              ForEach(this.list, (item: string, idx: number) => {
+                FlowItem() {
+                  Column() {
+                    if (idx === 0) {
+                      Row() {
+                        Image("https://www.dillonl.com/u/demo.png").width(110).height(50).borderRadius(10)
+                        Text("热门IP壁纸").offset({ x: -90, y: 2 }).fontColor(0xffffff)
+                      }.width(110).height(50).margin({ bottom: 14 })
+                    }
+                    Column() {
+                      Image("https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg?auto=compress&cs=tinysrgb&w=600")
+                        .width("100%")
+                        .height(320)
+                        .borderRadius(10)
+                        .backgroundColor(0xffdbdbdb)
+                      Text("自然风光").fontSize(14).margin({ top: '5' })
+                      Text("9张").fontSize(12).fontColor(0xffcccccc).margin({ top: 5 })
+                    }.width("100%").alignItems(HorizontalAlign.Start)
+                  }.alignItems(HorizontalAlign.Start)
+                }.width("50%").margin({ bottom: 18 })
 
-          }.columnsTemplate("lfr lfr").columnsGap(10).rowsGap(10).width("94%")
+              }, item => item)
+
+            }
+            .width('95%')
+            .height('100%')
+            .layoutDirection(FlexDirection.Column)
+            .columnsTemplate("1fr 1fr")
+            .columnsGap(12)
+          }
+
         }.tabBar(this.TabBuilder(0, '首页'))
 
         TabContent() {
-          WaterFlow({ scroller: this.scroller }) {
-            ForEach(this.list, (item: string,idx:number) => {
-              FlowItem() {
-                Column(){
-                  if(idx === 0){
-                    Row() {
-                      Image("https://www.dillonl.com/u/demo.png").width(110).height(50).borderRadius(10)
-                      Text("热门IP壁纸").offset({ x: -90, y: 2 }).fontColor(0xffffff)
-                    }.width(110).height(50).margin({ bottom: 14 })
-                  }
-                  Column() {
-                    Image("https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg?auto=compress&cs=tinysrgb&w=600").width("100%").height(320).borderRadius(10).backgroundColor(0xffdbdbdb)
-                    Text("自然风光").fontSize(14).margin({ top: '5' })
-                    Text("9张").fontSize(12).fontColor(0xffcccccc).margin({ top: 5 })
-                  }.width("100%").alignItems(HorizontalAlign.Start)
-                }.alignItems(HorizontalAlign.Start)
-              }.width("50%").margin({ bottom: 18 })
+          Scroll(this.home_scroller) {
+            Grid() {
+              ForEach(this.list, (item) => {
+                GridItem() {
+                  Stack({ alignContent: Alignment.TopStart }) {
+                    Image("https://www.dillonl.com/u/demo.png").borderRadius(12).width('100%')
+                    Text("中国风").fontColor(0xffffffff).fontSize(18).markAnchor({ x: -14, y: -20 })
+                  }.width('48.5%')
+                }
+              })
 
-            }, item => item)
+            }.columnsTemplate("lfr lfr").columnsGap(10).rowsGap(10).width("94%")
+          }.width("100%").scrollBar(BarState.Off)
 
-          }.width('95%').height('100%').layoutDirection(FlexDirection.Column).columnsTemplate("1fr 1fr").columnsGap(12)
         }.tabBar(this.TabBuilder(1, '分类'))
 
         TabContent() {
