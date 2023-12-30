@@ -1,3 +1,5 @@
+import { OpearInter } from '../interface/index'
+
 @Entry
 @Component
 struct Index {
@@ -6,6 +8,11 @@ struct Index {
   @State currentIndex: number = 0
   private controller: TabsController = new TabsController()
   @State list: Array<string> = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',]
+  @State opearList: Array<OpearInter> = [
+    { icon: $r("app.media.order"), title: "我的壁纸" },
+    { icon: $r("app.media.love"), title: "我的收藏" },
+    { icon: $r("app.media.about"), title: "关于壁纸" },
+  ]
   scroller: Scroller = new Scroller()
   home_scroller: Scroller = new Scroller()
 
@@ -78,11 +85,39 @@ struct Index {
 
             }.columnsTemplate("lfr lfr").columnsGap(10).rowsGap(10).width("94%")
           }.width("100%").scrollBar(BarState.Off)
-
         }.tabBar(this.TabBuilder(1, '分类'))
 
         TabContent() {
+          Column() {
+              Flex({
+                direction: FlexDirection.Column,
+                justifyContent: FlexAlign.Center,
+                alignItems: ItemAlign.Center
+              }) {
+                Image("https://www.dillonl.com/u/demo.png")
+                  .width(60)
+                  .height(60)
+                  .borderRadius(60)
+                  .backgroundColor(0xfff4f4f4)
+                Text("冰消叶散").fontWeight(FontWeight.Bold).fontSize(18).margin({ top: 10 })
+              }.height(80)
+            List() {
+              ForEach(this.opearList, (item) => {
+                ListItem() {
+                  Flex({ justifyContent: FlexAlign.SpaceBetween }) {
+                    Row() {
+                      Image(item.icon).width(20).height(20)
+                      Text(`${item.title}`).fontSize(14).margin({ left: 14 })
+                    }
 
+                    Image($r("app.media.arrow")).width(20).height(20)
+                  }
+                }.margin({ bottom: 30 })
+              })
+
+            }.width("90%").margin({top:50})
+            Button('退出登录', { type: ButtonType.Capsule, stateEffect: true }).backgroundColor(0xa99ee9).width("90%")
+          }.justifyContent(FlexAlign.Start).height("100%").width("100%")
         }.tabBar(this.TabBuilder(2, '我的'))
       }
       .vertical(false)
