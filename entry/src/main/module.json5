@@ -35,6 +35,9 @@
     "requestPermissions":[
       {
         "name" : "ohos.permission.INTERNET"
+      },
+      {
+        "name" : "ohos.permission.SET_WALLPAPER"
       }
     ]
   }

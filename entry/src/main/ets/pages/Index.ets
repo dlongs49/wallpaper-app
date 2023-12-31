@@ -1,5 +1,8 @@
 import { OpearInter } from '../interface/index'
-
+import wallpaper from '@ohos.wallpaper';
+import request from '@ohos.request';
+import requests from '@system.request';
+import document from '@ohos.document';
 @Entry
 @Component
 struct Index {
@@ -15,9 +18,12 @@ struct Index {
   ]
   scroller: Scroller = new Scroller()
   home_scroller: Scroller = new Scroller()
+
   @Builder NavigationTitle() {
-    Column() {}.backgroundColor(this.currentIndex == 2 ? 0xe9e5fb : '').height(52).width("100%")
+    Column() {
+    }.backgroundColor(this.currentIndex == 2 ? 0xe9e5fb : '').height(52).width("100%")
   }
+
   @Builder TabBuilder(index: number, title: string) {
 
     Column() {
@@ -59,7 +65,67 @@ struct Index {
                         .backgroundColor(0xffdbdbdb)
                       Text("自然风光").fontSize(14).margin({ top: '5' })
                       Text("9张").fontSize(12).fontColor(0xffcccccc).margin({ top: 5 })
-                    }.width("100%").alignItems(HorizontalAlign.Start)
+                    }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
+                      let downloadTask;
+
+
+                      try {
+                        request.downloadFile(getContext(this), {
+                          url: "http://127.0.0.1:800/s.jpg",
+                          // filePath: getContext(this).filesDir+"/s.jpg",
+                          filePath: `${getContext(this).tempDir}/test.jpg`,
+                          background: true
+                        }, (err, data) => {
+                          if (err) {
+                            console.error("下载错误", JSON.stringify(err))
+                            return
+                          }
+                          downloadTask = data
+                          // downloadTask.getTaskInfo().then((downloadInfo) => {
+                          //   console.info('下载中:' + JSON.stringify(downloadInfo))
+                          // }) .catch((err) => {
+                          //   console.error('下载一异常 :' + err)
+                          // });
+                          let progresCallback = (receivedSize, totalSize) => {
+                            console.info("进度:" + receivedSize + " totalSize:" + totalSize);
+                          };
+                          downloadTask.on('progress', progresCallback);
+                          let failCallback = (err) => {
+                            console.info('监听下载失败:' + err);
+                          };
+                          downloadTask.on('fail', failCallback);
+                          let completeCallback = () => {
+                            console.info('下载完成');
+                          };
+                          downloadTask.on('complete', completeCallback);
+                          let pauseCallback = () => {
+                            console.info('下载暂停');
+                          };
+                          downloadTask.on('pause', pauseCallback);
+                          let removeCallback = () => {
+                            console.info('下载移除');
+                          };
+                          downloadTask.on('remove', removeCallback);
+                          downloadTask.getTaskInfo((err, downloadInfo) => {
+                            if (err) {
+                              console.error('Failed to query the download mimeType. Cause:' + JSON.stringify(err));
+                            } else {
+                              console.info('下载信息:' + JSON.stringify(downloadInfo));
+                            }
+                          });
+                        })
+                      } catch (err) {
+                        console.error('错误码 : ' + err.code + ', 错误信息 : ' + err.message);
+                      }
+                      // let wallpaperPath = "/data/storage/el2/base/haps/entry/files/Cup_ic.jpg";
+                      // wallpaper.setWallpaper(wallpaperPath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
+                      //   if (error) {
+                      //     console.error(`错误: ${JSON.stringify(error)}`);
+                      //     return;
+                      //   }
+                      //   console.log(`成功`);
+                      // });
+                    })
                   }.alignItems(HorizontalAlign.Start)
                 }.width("50%").margin({ bottom: 18 })
 
@@ -93,18 +159,19 @@ struct Index {
 
         TabContent() {
           Column() {
-              Flex({
-                direction: FlexDirection.Column,
-                justifyContent: FlexAlign.Center,
-                alignItems: ItemAlign.Center
-              }) {
-                Image("https://www.dillonl.com/u/demo.png")
-                  .width(60)
-                  .height(60)
-                  .borderRadius(60)
-                  .backgroundColor(0xfff4f4f4)
-                Text("冰消叶散").fontWeight(FontWeight.Bold).fontSize(18).margin({ top: 10 })
-              }.height(100).margin({top:50})
+            Flex({
+              direction: FlexDirection.Column,
+              justifyContent: FlexAlign.Center,
+              alignItems: ItemAlign.Center
+            }) {
+              Image("https://www.dillonl.com/u/demo.png")
+                .width(60)
+                .height(60)
+                .borderRadius(60)
+                .backgroundColor(0xfff4f4f4)
+              Text("冰消叶散").fontWeight(FontWeight.Bold).fontSize(18).margin({ top: 10 })
+            }.height(100).margin({ top: 50 })
+
             List() {
               ForEach(this.opearList, (item) => {
                 ListItem() {
@@ -119,12 +186,13 @@ struct Index {
                 }.margin({ bottom: 30 })
               })
 
-            }.width("90%").margin({top:50})
+            }.width("90%").margin({ top: 50 })
+
             Button('退出登录', { type: ButtonType.Capsule, stateEffect: true }).backgroundColor(0xa99ee9).width("90%")
           }.justifyContent(FlexAlign.Start).height("100%").width("100%").linearGradient({
             direction: GradientDirection.Top,
             angle: 180,
-            colors: [[0xe9e5fb, 0.0],[0xffffff, 0.5], [0xffffff, 1.0]]
+            colors: [[0xe9e5fb, 0.0], [0xffffff, 0.5], [0xffffff, 1.0]]
           })
         }.tabBar(this.TabBuilder(2, '我的'))
       }
