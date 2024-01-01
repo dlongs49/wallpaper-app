@@ -1,8 +1,9 @@
-import { OpearInter } from '../interface/index'
+import router from '@ohos.router'
 import wallpaper from '@ohos.wallpaper';
 import request from '@ohos.request';
 import requests from '@system.request';
 import document from '@ohos.document';
+import { OpearInter } from '../interface/index'
 @Entry
 @Component
 struct Index {
@@ -25,7 +26,6 @@ struct Index {
   }
 
   @Builder TabBuilder(index: number, title: string) {
-
     Column() {
       Image(this.currentIndex === index ? `../resources/base/media/${index}_.svg` : `../resources/base/media/${index}.svg`)
         .width(24)
@@ -41,7 +41,6 @@ struct Index {
   }
 
   build() {
-
     Navigation() {
       this.NavigationTitle()
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
@@ -66,57 +65,69 @@ struct Index {
                       Text("自然风光").fontSize(14).margin({ top: '5' })
                       Text("9张").fontSize(12).fontColor(0xffcccccc).margin({ top: 5 })
                     }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
-                      let downloadTask;
-
-
-                      try {
-                        request.downloadFile(getContext(this), {
-                          url: "http://127.0.0.1:800/s.jpg",
-                          // filePath: getContext(this).filesDir+"/s.jpg",
-                          filePath: `${getContext(this).tempDir}/test.jpg`,
-                          background: true
-                        }, (err, data) => {
-                          if (err) {
-                            console.error("下载错误", JSON.stringify(err))
-                            return
-                          }
-                          downloadTask = data
-                          // downloadTask.getTaskInfo().then((downloadInfo) => {
-                          //   console.info('下载中:' + JSON.stringify(downloadInfo))
-                          // }) .catch((err) => {
-                          //   console.error('下载一异常 :' + err)
-                          // });
-                          let progresCallback = (receivedSize, totalSize) => {
-                            console.info("进度:" + receivedSize + " totalSize:" + totalSize);
-                          };
-                          downloadTask.on('progress', progresCallback);
-                          let failCallback = (err) => {
-                            console.info('监听下载失败:' + err);
-                          };
-                          downloadTask.on('fail', failCallback);
-                          let completeCallback = () => {
-                            console.info('下载完成');
-                          };
-                          downloadTask.on('complete', completeCallback);
-                          let pauseCallback = () => {
-                            console.info('下载暂停');
-                          };
-                          downloadTask.on('pause', pauseCallback);
-                          let removeCallback = () => {
-                            console.info('下载移除');
-                          };
-                          downloadTask.on('remove', removeCallback);
-                          downloadTask.getTaskInfo((err, downloadInfo) => {
-                            if (err) {
-                              console.error('Failed to query the download mimeType. Cause:' + JSON.stringify(err));
-                            } else {
-                              console.info('下载信息:' + JSON.stringify(downloadInfo));
-                            }
-                          });
-                        })
-                      } catch (err) {
-                        console.error('错误码 : ' + err.code + ', 错误信息 : ' + err.message);
-                      }
+                      router.pushUrl({
+                        url:"pages/SetWallpaper",
+                        params:{}
+                      }).then().catch(err=>{
+                        console.error("路由跳转错误："+JSON.stringify(err))
+                      })
+                      // let  downloadTask
+                      // try {
+                      //   request.downloadFile(getContext(this), {
+                      //     url: "http://localhost:8000/s.jpg",
+                      //     filePath: "/data/storage/el2/base/haps/entry/files/s.jpg",
+                      //     // filePath: `${getContext(this).filesDir}/s.jpg`,
+                      //     networkType: request.NETWORK_WIFI,
+                      //     background: true
+                      //   }, (err, data) => {
+                      //     if (err) {
+                      //       console.error("下载错误", JSON.stringify(err))
+                      //       return
+                      //     }
+                      //     downloadTask = data
+                      //     let progresCallback = (receivedSize, totalSize) => {
+                      //       console.info("进度:" + receivedSize + " totalSize:" + totalSize);
+                      //     };
+                      //     downloadTask.on('progress', progresCallback);
+                      //     let failCallback = (err) => {
+                      //       console.info('监听下载失败:' + err);
+                      //
+                      //     };
+                      //     downloadTask.on('fail', failCallback);
+                      //     let completeCallback = () => {
+                      //       console.info('下载完成');
+                      //     };
+                      //     downloadTask.on('complete', completeCallback);
+                      //     let pauseCallback = () => {
+                      //       console.info('下载暂停');
+                      //       downloadTask.delete((err, result)=>{
+                      //         if(err) {
+                      //           console.error('Failed to remove the download task.');
+                      //           return;
+                      //         }
+                      //         if (result) {
+                      //           console.info('Download task removed.');
+                      //         } else {
+                      //           console.error('Failed to remove the download task.');
+                      //         }
+                      //       });
+                      //     };
+                      //     downloadTask.on('pause', pauseCallback);
+                      //     let removeCallback = () => {
+                      //       console.info('下载移除');
+                      //     };
+                      //     downloadTask.on('remove', removeCallback);
+                      //     downloadTask.getTaskInfo((err, downloadInfo) => {
+                      //       if (err) {
+                      //         console.error('Failed to query the download mimeType. Cause:' + JSON.stringify(err));
+                      //       } else {
+                      //         console.info('下载信息:' + JSON.stringify(downloadInfo));
+                      //       }
+                      //     });
+                      //   })
+                      // } catch (err) {
+                      //   console.error('错误码 : ' + err.code + ', 错误信息 : ' + err.message);
+                      // }
                       // let wallpaperPath = "/data/storage/el2/base/haps/entry/files/Cup_ic.jpg";
                       // wallpaper.setWallpaper(wallpaperPath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
                       //   if (error) {
