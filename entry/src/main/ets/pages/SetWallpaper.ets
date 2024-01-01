@@ -1,4 +1,40 @@
 import router from '@ohos.router'
+
+@CustomDialog
+struct CustomDialogComm{
+  controller: CustomDialogController
+  onLock:()=>void
+  onDesktop:()=>void
+  onAll:()=>void
+  build(){
+    Column(){
+      Button({ type: ButtonType.Normal }){
+        Text("应用锁屏").fontColor(0x000000).width("90%")
+      }.width("100%").height(50).backgroundColor(0xffffff).onClick(()=>{
+        this.onLock()
+      })
+      Button({ type: ButtonType.Normal }){
+        Text("应用桌面").fontColor(0x000000).width("90%")
+      }.width("100%").height(50).backgroundColor(0xffffff).onClick(()=>{
+        this.onDesktop()
+      })
+      Button({ type: ButtonType.Normal }){
+        Text("应用全部").fontColor(0x000000).width("90%")
+      }.width("100%").height(50).backgroundColor(0xffffff).onClick(()=>{
+        this.onAll()
+      })
+      Button('取消', { type: ButtonType.Capsule, stateEffect: true })
+        .backgroundColor(0xeeeeee)
+        .width("90%")
+        .height(44)
+        .margin({top:15})
+        .fontColor(0x000000)
+        .onClick(() => {
+          this.controller.close()
+        })
+    }.backgroundColor(0xffffff).borderRadius(14).padding({top:25,bottom:20}).width("90%")
+  }
+}
 @Entry
 @Component
 struct SetWallpaper {
@@ -7,7 +43,26 @@ struct SetWallpaper {
     "https://images.pexels.com/photos/3565746/pexels-photo-3565746.jpeg",
     "https://images.pexels.com/photos/1366913/pexels-photo-1366913.jpeg"
   ]
-
+  dialogController:CustomDialogController = new CustomDialogController({
+    builder:CustomDialogComm({
+      onLock:this.onLock,
+      onDesktop:this.onDesktop,
+      onAll:this.onAll
+    }),
+    alignment: DialogAlignment.Bottom,
+    offset: { dx: 0, dy: -20 },
+    autoCancel: true,
+    customStyle:true
+  })
+  onLock(){
+    console.log("应用锁屏")
+  }
+  onDesktop(){
+    console.log("应用桌面")
+  }
+  onAll(){
+    console.log("应用全部")
+  }
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
       Swiper() {
@@ -35,7 +90,9 @@ struct SetWallpaper {
           .width("80%")
           .fontColor(0x000000)
           .onClick(() => {
-
+            if(this.dialogController != undefined){
+              this.dialogController.open()
+            }
           })
       }.position({ y: "92%", x: '5%' }).width("90%")
     }.height("100%").width("100%")
