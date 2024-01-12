@@ -1,5 +1,6 @@
 {
   "src": [
+    "pages/Sign",
     "pages/Index",
     "pages/SetWallpaper"
   ]
