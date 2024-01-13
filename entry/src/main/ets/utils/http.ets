@@ -19,10 +19,11 @@ async function create_http(api: string, extraData: any, method: http.RequestMeth
 }
 
 export default {
-  get: (api,) => {
+  get: (api) => {
     return new Promise((resolve, reject) => {
       create_http(api, "", http.RequestMethod.GET).then((response) => {
-        console.log("", response)
+        let result = response.result
+        resolve(result)
       }).catch((error) => {
         reject(error)
       })

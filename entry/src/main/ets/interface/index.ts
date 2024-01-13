@@ -14,5 +14,15 @@ export interface SignResInter{
 }
 export interface PageInter{
   offset?:number,
-  limit?:number
+  limit?:number,
+  count?:number
+}
+export interface WallItemInter{
+  id:string,
+  title:string,
+  url_type:number,
+  url:string,
+}
+export interface ParamsInter{
+  id?:string,
 }

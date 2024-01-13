@@ -3,7 +3,8 @@ import wallpaper from '@ohos.wallpaper';
 import prompt from '@ohos.prompt'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
-import { OpearInter,PageInter } from '../interface/index'
+import { OpearInter, PageInter,WallItemInter } from '../interface/index'
+
 @Entry
 @Component
 struct Index {
@@ -11,7 +12,7 @@ struct Index {
   @State selectedFontColor: string = '#e6dd23'
   @State currentIndex: number = 0
   private controller: TabsController = new TabsController()
-  @State list: Array<string> = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',]
+  @State list: Array<any> = []
   @State opearList: Array<OpearInter> = [
     { icon: $r("app.media.order"), title: "我的壁纸" },
     { icon: $r("app.media.love"), title: "我的收藏" },
@@ -19,16 +20,19 @@ struct Index {
   ]
   scroller: Scroller = new Scroller()
   home_scroller: Scroller = new Scroller()
-  @State page:PageInter = {offset:1,limit:20}
+  @State page: PageInter = { offset: 1, limit: 20,count:0 }
+
   onPageShow() {
     this.getWallpaper()
   }
-  async getWallpaper(){
+
+  async getWallpaper() {
     try {
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api)
       if (res.code === 200) {
-        console.log(res.data)
+        this.page.count = res.data.count
+        this.list = res.data.rows
       } else {
         prompt.showToast({
           message: res.msg,
@@ -44,6 +48,7 @@ struct Index {
       });
     }
   }
+
   @Builder NavigationTitle() {
     Column() {
     }.backgroundColor(this.currentIndex == 2 ? 0xe9e5fb : '').height(52).width("100%")
@@ -71,105 +76,29 @@ struct Index {
         TabContent() {
           if (this.currentIndex == 0) {
             WaterFlow({ scroller: this.scroller }) {
-              ForEach(this.list, (item: string, idx: number) => {
+              ForEach(this.list, (item: WallItemInter, idx: number) => {
                 FlowItem() {
                   Column() {
                     if (idx === 0) {
                       Row() {
-                        Image("https://www.dillonl.com/u/demo.png").width(110).height(50).borderRadius(10)
-                        Text("热门IP壁纸").offset({ x: -90, y: 2 }).fontColor(0xffffff)
-                      }.width(110).height(50).margin({ bottom: 14 })
+                        Image("https://www.dillonl.com/u/demo.png").width('100%').height(50).borderRadius(10)
+                        Text("热门IP壁纸").offset({ x: -130, y: 2 }).fontColor(0xffffff)
+                      }.width('100%').height(50).margin({ bottom: 14 })
                     }
                     Column() {
-                      Image("https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg?auto=compress&cs=tinysrgb&w=600")
+                      Image(item.url_type == 0 ? base_url + item.url : item.url)
                         .width("100%")
                         .height(320)
                         .borderRadius(10)
                         .backgroundColor(0xffdbdbdb)
-                      Text("自然风光").fontSize(14).margin({ top: '5' })
-                      Text("9张").fontSize(12).fontColor(0xffcccccc).margin({ top: 5 })
+                      Text(item.title).fontSize(14).margin({ top: '5' })
                     }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
-                      // router.pushUrl({
-                      //   url:"pages/SetWallpaper",
-                      //   params:{}
-                      // }).then().catch(err=>{
-                      //   console.error("路由跳转错误："+JSON.stringify(err))
-                      // })
-                      // let downloadTask
-                      // try {
-                      //   request.downloadFile(getContext(this), {
-                      //     url: "http://192.168.2.102:800/s.jpg",
-                      //     // filePath: "/data/storage/el2/base/haps/entry/files/s.jpg",
-                      //     filePath: `${getContext(this).filesDir}/s.jpg`,
-                      //     networkType: request.NETWORK_WIFI,
-                      //     background: true
-                      //   }, (err, data) => {
-                      //     if (err) {
-                      //       console.error("下载错误", JSON.stringify(err))
-                      //       return
-                      //     }
-                      //     downloadTask = data
-                      //     let progresCallback = (receivedSize, totalSize) => {
-                      //       console.info("进度:" + receivedSize + " totalSize:" + totalSize);
-                      //     };
-                      //     downloadTask.on('progress', progresCallback);
-                      //     let failCallback = (err) => {
-                      //       console.info('监听下载失败:' + err);
-                      //
-                      //     };
-                      //     downloadTask.on('fail', failCallback);
-                      //     let completeCallback = () => {
-                      //       console.info('下载完成');
-                      //       let filePath = getContext(this).filesDir + "/s.jpg";
-                      //       wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
-                      //         if (error) {
-                      //           console.error(`错误: ${JSON.stringify(error)}`);
-                      //           return;
-                      //         }
-                      //         console.log(`成功`);
-                      //       });
-                      //       fs.access(filePath).then((res) => {
-                      //         if (res) {
-                      //           console.info("file exists",res);
-                      //         }else{
-                      //           console.log("读取",res)
-                      //         }
-                      //       }).catch((err) => {
-                      //         console.info("access failed with error message: " + err.message + ", error code: " + err.code);
-                      //       });
-                      //     };
-                      //     downloadTask.on('complete', completeCallback);
-                      //     let pauseCallback = () => {
-                      //       console.info('下载暂停');
-                      //       downloadTask.delete((err, result) => {
-                      //         if (err) {
-                      //           console.error('Failed to remove the download task.');
-                      //           return;
-                      //         }
-                      //         if (result) {
-                      //           console.info('Download task removed.');
-                      //         } else {
-                      //           console.error('Failed to remove the download task.');
-                      //         }
-                      //       });
-                      //     };
-                      //     downloadTask.on('pause', pauseCallback);
-                      //     let removeCallback = () => {
-                      //       console.info('下载移除');
-                      //     };
-                      //     downloadTask.on('remove', removeCallback);
-                      //     downloadTask.getTaskInfo((err, downloadInfo) => {
-                      //       if (err) {
-                      //         console.error('Failed to query the download mimeType. Cause:' + JSON.stringify(err));
-                      //       } else {
-                      //         console.info('下载信息:' + JSON.stringify(downloadInfo));
-                      //       }
-                      //     });
-                      //   })
-                      // } catch (err) {
-                      //   console.error('错误码 : ' + err.code + ', 错误信息 : ' + err.message);
-                      // }
-
+                      router.pushUrl({
+                        url:"pages/SetWallpaper",
+                        params:{
+                          id: item.id
+                        }
+                      })
                     })
                   }.alignItems(HorizontalAlign.Start)
                 }.width("50%").margin({ bottom: 18 })
