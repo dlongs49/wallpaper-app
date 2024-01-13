@@ -12,3 +12,7 @@ export interface SignResInter{
   data?:string,
   msg?:string
 }
+export interface PageInter{
+  offset?:number,
+  limit?:number
+}
