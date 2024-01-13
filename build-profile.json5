@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.cer",
+          "storePassword": "0000001B26691E94203FC3D70B9781C2D4B9FE4A404AE7C31ACA265CF105EC1A93B5E3A1519293639D5F40",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BE8F9123BF1E1A2777F1FD6983A4401066D4DCD566056AE883ED56F8811959BF7F6CDB32A576838",
+          "profile": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.p12"
+        }
+      }
+    ],
     "compileSdkVersion": 9,
     "compatibleSdkVersion": 9,
     "products": [
