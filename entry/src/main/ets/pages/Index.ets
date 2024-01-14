@@ -25,12 +25,14 @@ struct Index {
     avatar: "",
     uname: ""
   }
+  @State typeList: any = []
 
   onPageShow() {
     this.getWallpaper()
     this.getUserInfo()
+    this.getWallpaperType()
   }
-
+  // 壁纸
   async getWallpaper() {
     try {
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
@@ -59,7 +61,7 @@ struct Index {
       const res: any = await request.get("/api/sign/get_user")
       if (res.code === 200) {
         this.info = res.data
-        console.log("***",JSON.stringify(this.info))
+        console.log("***", JSON.stringify(this.info))
       } else {
         this.info = {
           avatar: "",
@@ -74,7 +76,29 @@ struct Index {
       });
     }
   }
-
+  // 壁纸分类
+  async getWallpaperType() {
+    try {
+      let api = `/api/wallpaper/app/get_wallpaper_type?offset=${this.page.offset}&limit=${this.page.limit}`
+      const res: any = await request.post(api)
+      if (res.code === 200) {
+        this.page.count = res.data.count
+        this.typeList = res.data.rows
+      } else {
+        prompt.showToast({
+          message: res.msg,
+          bottom: 400,
+          duration: 2000,
+        });
+      }
+    } catch (err) {
+      prompt.showToast({
+        message: "服务出现异常!",
+        bottom: 400,
+        duration: 2000,
+      });
+    }
+  }
   @Builder NavigationTitle() {
     Column() {
     }.backgroundColor(this.currentIndex == 2 ? 0xe9e5fb : '').height(52).width("100%")
@@ -144,17 +168,28 @@ struct Index {
         TabContent() {
           Scroll(this.home_scroller) {
             Grid() {
-              ForEach(this.list, (item) => {
+              ForEach(this.typeList, (item:any) => {
                 GridItem() {
                   Stack({ alignContent: Alignment.TopStart }) {
-                    Image("https://www.dillonl.com/u/demo.png").borderRadius(12).width('100%')
-                    Text("中国风").fontColor(0xffffffff).fontSize(18).markAnchor({ x: -14, y: -20 })
+                    Image(item.cover_type === 0 ? base_url + item.cover_url : item.cover_url).borderRadius(12).width('100%')
+                    Text(item.title).fontColor(0xffffffff).fontSize(18).markAnchor({ x: -14, y: -20 })
                   }.width('48.5%')
-                }
+                }.onClick(()=>{
+                  router.pushUrl({
+                    url:"pages/Wallpaper",
+                    params:{
+                      id:item.id
+                    }
+                  })
+                })
               })
-
-            }.columnsTemplate("lfr lfr").columnsGap(10).rowsGap(10).width("94%")
-          }.width("100%").scrollBar(BarState.Off)
+            }
+            .columnsTemplate("lfr lfr")
+            .columnsGap(10)
+            .rowsGap(10)
+            .layoutDirection(GridDirection.Row)
+            .width("94%")
+          }.width("100%").scrollBar(BarState.Off).height('100%')
         }.tabBar(this.TabBuilder(1, '分类'))
 
         TabContent() {

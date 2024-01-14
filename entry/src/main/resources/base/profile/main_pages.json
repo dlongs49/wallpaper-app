@@ -3,6 +3,7 @@
     "pages/Index",
     "pages/Sign",
     "pages/SetWallpaper",
-    "pages/UserInfo"
+    "pages/UserInfo",
+    "pages/Wallpaper"
   ]
 }
