@@ -11,7 +11,7 @@ async function create_http(api: string, extraData: any, method: http.RequestMeth
     readTimeout: 20000,
     header: {
       'Content-Type': 'application/json',
-      "Authorization": token
+      "Authorization": token ? 'Bearer ' + token : ''
     },
     extraData,
     expectDataType: http.HttpDataType.OBJECT

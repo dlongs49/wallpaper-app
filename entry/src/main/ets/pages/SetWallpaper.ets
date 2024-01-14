@@ -2,8 +2,10 @@ import router from '@ohos.router'
 import prompt from '@ohos.prompt'
 import request from '../utils/http'
 import { ParamsInter, PageInter, WallItemInter } from '../interface/index'
-
+import { ListData } from "../utils/data_source"
 import { base_url } from '../utils/env'
+import storage from '../utils/storage'
+
 
 @CustomDialog
 struct CustomDialogComm {
@@ -48,20 +50,43 @@ struct CustomDialogComm {
 @Entry
 @Component
 struct SetWallpaper {
-  @State list: Array<any> = []
   @State page: PageInter = { offset: 1, limit: 2, count: 0 }
-
-  onPageShow() {
-    let params:ParamsInter = router.getParams();
-    this.getWallpaperDetail(params.id)
+  @State list: any = new ListData([
+    {
+      "id": "5e0f686b-2053-458e-8f41-6cf03ae4f506",
+      "type_id": "f3ae2967-391a-4a61-aa92-5f6bd69d9931",
+      "type_name": "风景",
+      "title": "尽头",
+      "url": "/upload/wallpaper/2024-01-11/20121247-8c3a-4845-97de-c01d6e4cc680.jpg",
+      "url_type": 0,
+      "is_like": 0,
+      "create_time": "2024-01-11T15:02:44.000Z"
+    },
+    {
+      "id": "2630aaa2-f30c-43ff-9ea2-ed17ee34ac71",
+      "type_id": "a08de8f4-c41d-4a05-9fa7-05b9edc50ff0",
+      "type_name": "艺术",
+      "title": "手机连接",
+      "url": "/upload/wallpaper/2024-01-11/1a4568f9-2939-4c1b-b42a-a1ec742cd340.jpg",
+      "url_type": 0,
+      "is_like": 0,
+      "create_time": "2024-01-11T15:04:03.000Z"
+    }
+  ])
+  @State currentItem:any ={}
+  aboutToAppear() {
+    this.currentItem = this.list.getData(0)
+    let params: ParamsInter = router.getParams();
+    // this.getWallpaperDetail(params.id)
+    // this.getWallpaper()
   }
-
+  // 当前壁纸
   async getWallpaperDetail(id: string) {
     try {
       let api = `/api/wallpaper/app/detail_wallpaper/${id}`
       const res: any = await request.get(api)
       if (res.code === 200) {
-        this.getWallpaper(res.data)
+        this.list = [res.data]
       } else {
         prompt.showToast({
           message: res.msg,
@@ -77,15 +102,14 @@ struct SetWallpaper {
       });
     }
   }
-
-  async getWallpaper(data) {
+  // 壁纸列表
+  async getWallpaper() {
     try {
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api)
       if (res.code === 200) {
         this.page.count = res.data.count
-        // this.list = res.data.rows
-        console.log("***********",this.list)
+        this.list = [...this.list, ...res.data.rows]
       } else {
         prompt.showToast({
           message: res.msg,
@@ -101,7 +125,27 @@ struct SetWallpaper {
       });
     }
   }
+  // 收藏
+  async  handleCollect(){
+    try {
+      const res: any = await request.post(`/api/sign/app/collect_wallpaper?wallpaper_id=${this.currentItem.id}`)
+      if (res.code === 200) {
 
+      } else {
+        prompt.showToast({
+          message: res.msg,
+          bottom: 400,
+          duration: 2000,
+        });
+      }
+    }catch (err) {
+      prompt.showToast({
+        message: "服务出现异常!",
+        bottom: 400,
+        duration: 2000,
+      });
+    }
+  }
   dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomDialogComm({
       onLock: this.onLock,
@@ -202,16 +246,16 @@ struct SetWallpaper {
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
-      if(this.list.length != 0){
-        Swiper() {
-          ForEach(this.list, (item: WallItemInter) => {
-            Image(item.url_type == 0 ? base_url + item.url : item.url)
-              .width("100%")
-              .height("100%")
-              .backgroundColor('0xffeeeeee')
-          }, item => item)
-        }.indicator(false)
-      }
+      Swiper() {
+        LazyForEach(this.list, (item: WallItemInter) => {
+          Image(item.url_type == 0 ? base_url + item.url : item.url)
+            .width("100%")
+            .height("100%")
+            .backgroundColor('0xffeeeeee')
+        }, item => item)
+      }.indicator(false).onChange((i:number)=>{
+        this.currentItem = this.list[i];
+      })
 
 
       Flex({ alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
@@ -228,7 +272,11 @@ struct SetWallpaper {
       })
 
       Row() {
-        Image($r("app.media.love_white")).width(20).height(20).margin({ right: 20 })
+        Flex({ direction: FlexDirection.Row,alignItems: ItemAlign.Center }){
+          Image($r("app.media.love_white")).width(20).height(20).margin({ right: 20 })
+        }.width(40).height(40).onClick(()=>{
+            this.handleCollect()
+        })
         Button('应用壁纸', { type: ButtonType.Capsule, stateEffect: true })
           .backgroundColor(0xffffff)
           .width("80%")
