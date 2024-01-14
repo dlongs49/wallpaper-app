@@ -14,7 +14,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
     let context = this.context;
     let pathDir = context.filesDir;
-    windowStage.loadContent('pages/Sign', (err, data) => {
+    windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {
         return;
       }

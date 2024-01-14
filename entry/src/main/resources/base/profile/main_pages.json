@@ -1,7 +1,8 @@
 {
   "src": [
-    "pages/Sign",
     "pages/Index",
-    "pages/SetWallpaper"
+    "pages/Sign",
+    "pages/SetWallpaper",
+    "pages/UserInfo"
   ]
 }

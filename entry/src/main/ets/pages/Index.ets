@@ -3,7 +3,7 @@ import wallpaper from '@ohos.wallpaper';
 import prompt from '@ohos.prompt'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
-import { OpearInter, PageInter,WallItemInter } from '../interface/index'
+import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 
 @Entry
 @Component
@@ -20,10 +20,15 @@ struct Index {
   ]
   scroller: Scroller = new Scroller()
   home_scroller: Scroller = new Scroller()
-  @State page: PageInter = { offset: 1, limit: 20,count:0 }
+  @State page: PageInter = { offset: 1, limit: 20, count: 0 }
+  @State info: UinfoInter = {
+    avatar: "",
+    uname: ""
+  }
 
   onPageShow() {
     this.getWallpaper()
+    this.getUserInfo()
   }
 
   async getWallpaper() {
@@ -39,6 +44,27 @@ struct Index {
           bottom: 400,
           duration: 2000,
         });
+      }
+    } catch (err) {
+      prompt.showToast({
+        message: "服务出现异常!",
+        bottom: 400,
+        duration: 2000,
+      });
+    }
+  }
+  //个人信息
+  async getUserInfo() {
+    try {
+      const res: any = await request.get("/api/sign/get_user")
+      if (res.code === 200) {
+        this.info = res.data
+        console.log("***",JSON.stringify(this.info))
+      } else {
+        this.info = {
+          avatar: "",
+          uname: ""
+        }
       }
     } catch (err) {
       prompt.showToast({
@@ -94,8 +120,8 @@ struct Index {
                       Text(item.title).fontSize(14).margin({ top: '5' })
                     }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
                       router.pushUrl({
-                        url:"pages/SetWallpaper",
-                        params:{
+                        url: "pages/SetWallpaper",
+                        params: {
                           id: item.id
                         }
                       })
@@ -138,13 +164,22 @@ struct Index {
               justifyContent: FlexAlign.Center,
               alignItems: ItemAlign.Center
             }) {
-              Image("https://www.dillonl.com/u/demo.png")
+              Image(this.info.avatar ? base_url + this.info.avatar : $r('app.media.user'))
                 .width(60)
                 .height(60)
                 .borderRadius(60)
-                .backgroundColor(0xfff4f4f4)
-              Text("冰消叶散").fontWeight(FontWeight.Bold).fontSize(18).margin({ top: 10 })
-            }.height(100).margin({ top: 50 })
+                .backgroundColor(0xe7e7e7)
+              Text(this.info.uname ? this.info.uname : '未登录')
+                .fontWeight(FontWeight.Bold)
+                .fontSize(18)
+                .margin({ top: 10 })
+            }.height(100).margin({ top: 50 }).onClick(() => {
+              if (this.info.uname) {
+                router.pushUrl({ url: "pages/UserInfo" })
+              } else {
+                router.pushUrl({ url: "pages/Sign" })
+              }
+            })
 
             List() {
               ForEach(this.opearList, (item) => {
@@ -162,7 +197,9 @@ struct Index {
 
             }.width("90%").margin({ top: 50 })
 
-            Button('退出登录', { type: ButtonType.Capsule, stateEffect: true }).backgroundColor(0xa99ee9).width("90%")
+            if (this.info.id) {
+              Button('退出登录', { type: ButtonType.Capsule, stateEffect: true }).backgroundColor(0xa99ee9).width("90%")
+            }
           }.justifyContent(FlexAlign.Start).height("100%").width("100%").linearGradient({
             direction: GradientDirection.Top,
             angle: 180,

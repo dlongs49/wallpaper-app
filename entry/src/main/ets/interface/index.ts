@@ -26,3 +26,11 @@ export interface WallItemInter{
 export interface ParamsInter{
   id?:string,
 }
+export interface UinfoInter{
+  id?:string,
+  avatar:string,
+  uname:string,
+  sex?:number,
+  sex_tit?:string,
+  nation?:string
+}

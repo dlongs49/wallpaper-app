@@ -53,7 +53,6 @@ struct Sign {
     Navigation() {
       this.NavigationTitle()
       Column() {
-
         Column() {
         }
         .height(200)
@@ -131,15 +130,6 @@ struct Sign {
         .backgroundColor(0xa794ff)
         .width("90%")
         .margin({ top: 40 })
-        Flex({ alignItems: ItemAlign.Center, justifyContent: FlexAlign.Start }) {
-          Image($r("app.media.back")).width("70px").height("70px")
-        }
-        .position({ x: "4%", y: '2%' })
-        .width("120px")
-        .height("120px")
-        .onClick(() => {
-          router.back({ url: 'pages/Index' });
-        })
       }
       .justifyContent(FlexAlign.Start)
       .height("100%")
