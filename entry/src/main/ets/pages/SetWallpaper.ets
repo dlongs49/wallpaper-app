@@ -73,7 +73,8 @@ struct SetWallpaper {
       "create_time": "2024-01-11T15:04:03.000Z"
     }
   ])
-  @State currentItem:any ={}
+  @State currentItem: any = {}
+
   aboutToAppear() {
     this.currentItem = this.list.getData(0)
     let params: ParamsInter = router.getParams();
@@ -126,11 +127,16 @@ struct SetWallpaper {
     }
   }
   // 收藏
-  async  handleCollect(){
+  async handleCollect() {
     try {
       const res: any = await request.post(`/api/sign/app/collect_wallpaper?wallpaper_id=${this.currentItem.id}`)
       if (res.code === 200) {
-
+        this.currentItem.is_like = this.currentItem.is_like == 0 ? 1 : 0
+        prompt.showToast({
+          message: res.data,
+          bottom: 400,
+          duration: 2000,
+        });
       } else {
         prompt.showToast({
           message: res.msg,
@@ -138,7 +144,8 @@ struct SetWallpaper {
           duration: 2000,
         });
       }
-    }catch (err) {
+
+    } catch (err) {
       prompt.showToast({
         message: "服务出现异常!",
         bottom: 400,
@@ -146,6 +153,7 @@ struct SetWallpaper {
       });
     }
   }
+
   dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomDialogComm({
       onLock: this.onLock,
@@ -253,7 +261,7 @@ struct SetWallpaper {
             .height("100%")
             .backgroundColor('0xffeeeeee')
         }, item => item)
-      }.indicator(false).onChange((i:number)=>{
+      }.indicator(false).onChange((i: number) => {
         this.currentItem = this.list[i];
       })
 
@@ -272,11 +280,15 @@ struct SetWallpaper {
       })
 
       Row() {
-        Flex({ direction: FlexDirection.Row,alignItems: ItemAlign.Center }){
-          Image($r("app.media.love_white")).width(20).height(20).margin({ right: 20 })
-        }.width(40).height(40).onClick(()=>{
-            this.handleCollect()
+        Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+          Image(this.currentItem.is_like === 0 ? $r("app.media.love_white") : $r("app.media.love_red"))
+            .width(20)
+            .height(20)
+            .margin({ right: 20 })
+        }.width(40).height(40).onClick(() => {
+          this.handleCollect()
         })
+
         Button('应用壁纸', { type: ButtonType.Capsule, stateEffect: true })
           .backgroundColor(0xffffff)
           .width("80%")
