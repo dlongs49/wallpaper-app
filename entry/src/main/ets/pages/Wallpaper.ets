@@ -3,6 +3,7 @@ import prompt from '@ohos.prompt'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
+import TopNav from '../component/TopNav'
 
 @Entry
 @Component
@@ -41,14 +42,19 @@ struct Wallpaper {
       });
     }
   }
+
   @Builder NavigationTitle() {
     Column() {
     }.backgroundColor(this.currentIndex == 2 ? 0xe9e5fb : '').height(52).width("100%")
   }
+
   build() {
-    Navigation() {
-      this.NavigationTitle()
-      Scroll(this.scroller){
+    // Navigation() {
+    // this.NavigationTitle()
+
+    Column() {
+      TopNav()
+      Scroll(this.scroller) {
         Grid() {
           ForEach(this.list, (item: WallItemInter, idx: number) => {
             GridItem() {
@@ -77,6 +83,7 @@ struct Wallpaper {
         .columnsTemplate("1fr 1fr")
         .columnsGap(12)
       }
-    }.width('100%').height('100%').hideTitleBar(true)
+    }.width('100%')
+    // }.width('100%').height('100%').hideTitleBar(true)
   }
 }
