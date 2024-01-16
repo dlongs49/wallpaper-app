@@ -43,15 +43,8 @@ struct Wallpaper {
     }
   }
 
-  @Builder NavigationTitle() {
-    Column() {
-    }.backgroundColor(this.currentIndex == 2 ? 0xe9e5fb : '').height(52).width("100%")
-  }
 
   build() {
-    // Navigation() {
-    // this.NavigationTitle()
-
     Column() {
       TopNav({ title:"壁纸中心", url:"pages/Index" })
       Scroll(this.scroller) {
@@ -78,12 +71,11 @@ struct Wallpaper {
             }.width("50%").margin({ bottom: 18 })
           }, item => item)
         }
-        .width('95%')
+        .width('90%')
         .height('100%')
         .columnsTemplate("1fr 1fr")
         .columnsGap(12)
       }
     }.width('100%')
-    // }.width('100%').height('100%').hideTitleBar(true)
   }
 }
