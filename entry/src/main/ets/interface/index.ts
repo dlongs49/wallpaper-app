@@ -1,6 +1,7 @@
 export interface OpearInter{
   icon: unknown,
-  title: string
+  title: string,
+  url: string
 }
 
 export interface SignInter{

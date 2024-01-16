@@ -4,6 +4,9 @@
     "pages/Sign",
     "pages/SetWallpaper",
     "pages/UserInfo",
-    "pages/Wallpaper"
+    "pages/Wallpaper",
+    "pages/MineCollect",
+    "pages/MineWall",
+    "pages/AboutUs"
   ]
 }

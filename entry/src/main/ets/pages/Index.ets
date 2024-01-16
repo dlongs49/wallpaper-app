@@ -14,9 +14,9 @@ struct Index {
   private controller: TabsController = new TabsController()
   @State list: Array<any> = []
   @State opearList: Array<OpearInter> = [
-    { icon: $r("app.media.order"), title: "我的壁纸" },
-    { icon: $r("app.media.love"), title: "我的收藏" },
-    { icon: $r("app.media.about"), title: "关于壁纸" },
+    { icon: $r("app.media.order"), title: "我的壁纸",url:"pages/MineWall" },
+    { icon: $r("app.media.love"), title: "我的收藏",url:"pages/MineCollect" },
+    { icon: $r("app.media.about"), title: "关于壁纸",url:"pages/AboutUs" },
   ]
   scroller: Scroller = new Scroller()
   home_scroller: Scroller = new Scroller()
@@ -227,7 +227,9 @@ struct Index {
 
                     Image($r("app.media.arrow")).width(20).height(20)
                   }
-                }.margin({ bottom: 30 })
+                }.margin({ bottom: 30 }).onClick(() => {
+                  router.pushUrl({ url: item.url})
+                })
               })
 
             }.width("90%").margin({ top: 50 })
