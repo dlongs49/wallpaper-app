@@ -53,7 +53,7 @@ struct Wallpaper {
     // this.NavigationTitle()
 
     Column() {
-      TopNav()
+      TopNav({ title:"壁纸中心", url:"pages/Index" })
       Scroll(this.scroller) {
         Grid() {
           ForEach(this.list, (item: WallItemInter, idx: number) => {
@@ -65,7 +65,7 @@ struct Wallpaper {
                     .height(320)
                     .borderRadius(10)
                     .backgroundColor(0xffdbdbdb)
-                  Text(item.title).fontSize(14).margin({ top: '5' })
+                  Text(item.title).fontSize(14).margin({ top:10,left:5 })
                 }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
                   router.pushUrl({
                     url: "pages/SetWallpaper",

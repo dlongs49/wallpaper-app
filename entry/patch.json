@@ -1,7 +1,7 @@
 {
   "app": {
     "bundleName": "com.example.wallpaper_app",
-    "patchVersionCode": 2000552,
+    "patchVersionCode": 2000556,
     "versionCode": 1000000
   },
   "module": {
