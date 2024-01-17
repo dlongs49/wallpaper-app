@@ -4,7 +4,7 @@ import prompt from '@ohos.prompt'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
-
+import Loading from '../component/Loading'
 @Entry
 @Component
 struct Index {
@@ -167,28 +167,8 @@ struct Index {
 
         TabContent() {
           Scroll(this.home_scroller) {
-            Grid() {
-              ForEach(this.typeList, (item:any) => {
-                GridItem() {
-                  Stack({ alignContent: Alignment.TopStart }) {
-                    Image(item.cover_type === 0 ? base_url + item.cover_url : item.cover_url).borderRadius(12).width('100%')
-                    Text(item.title).fontColor(0xffffffff).fontSize(18).markAnchor({ x: -14, y: -20 })
-                  }.width('48.5%')
-                }.onClick(()=>{
-                  router.pushUrl({
-                    url:"pages/Wallpaper",
-                    params:{
-                      id:item.id
-                    }
-                  })
-                })
-              })
-            }
-            .columnsTemplate("lfr lfr")
-            .columnsGap(10)
-            .rowsGap(10)
-            .layoutDirection(GridDirection.Row)
-            .width("94%")
+            Loading()
+
           }.width("100%").scrollBar(BarState.Off).height('100%')
         }.tabBar(this.TabBuilder(1, '分类'))
 
