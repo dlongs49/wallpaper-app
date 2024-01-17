@@ -15,6 +15,8 @@ struct MineCollect {
   scroller: Scroller = new Scroller()
   home_scroller: Scroller = new Scroller()
   @State page: PageInter = { offset: 1, limit: 20, count: 0 }
+  @State show: boolean = false
+  @State y: number = 30
 
   onPageShow() {
     this.getWallpaper()
@@ -43,31 +45,54 @@ struct MineCollect {
     }
   }
 
-
   build() {
     Column() {
-      TopNav({ title:"我的收藏", url:"pages/Index" })
+      TopNav({ title: "我的收藏", url: "pages/Index" })
+
       Scroll(this.scroller) {
         Grid() {
           ForEach(this.list, (item: WallItemInter, idx: number) => {
             GridItem() {
               Column() {
-                Column() {
-                  Image(item.url_type == 0 ? base_url + item.url : item.url)
-                    .width("100%")
-                    .height(200)
-                    .borderRadius(10)
-                    .backgroundColor(0xffdbdbdb)
-                  Text("2023/10/12").fontSize(10).margin({ top:5,right:5 }).fontColor(0x585858)
-                }.width("100%").alignItems(HorizontalAlign.End).onClick((e: ClickEvent) => {
-                  router.pushUrl({
-                    url: "pages/SetWallpaper",
-                    params: {
-                      id: item.id
-                    }
-                  })
+                Stack() {
+                  Column() {
+                    Image(item.url_type == 0 ? base_url + item.url : item.url)
+                      .width("100%")
+                      .height(200)
+                      .borderRadius(10)
+                      .backgroundColor(0xffdbdbdb)
+                    Text("2023/10/12").fontSize(10).margin({ top: 5, right: 5 }).fontColor(0x585858)
+                  }.alignItems(HorizontalAlign.End)
+
+                  if (this.show) {
+                    Checkbox({ name: 'checkbox1', group: 'checkboxGroup', })
+                      .select(true)
+                      .selectedColor(0x027eff)
+                      .position({ x: '74%', y: '20%' })
+                      .onChange((value: boolean) => {
+                        console.info('Checkbox1 change is' + value)
+                      })
+                  }
+                }.gesture(
+                  LongPressGesture({ repeat: true, duration: 200 })
+                    .onAction((event: GestureEvent) => {
+                      if (event.repeat) {
+                        this.show = true
+                        this.y = 0
+                      }
+                    })
+                    .onActionEnd(() => {
+                      console.log("145")
+                    })
+                )
+              }.width("100%").alignItems(HorizontalAlign.End).onClick((e: ClickEvent) => {
+                router.pushUrl({
+                  url: "pages/SetWallpaper",
+                  params: {
+                    id: item.id
+                  }
                 })
-              }.alignItems(HorizontalAlign.Start)
+              })
             }.width("33%").margin({ bottom: 18 })
           }, item => item)
         }
@@ -75,7 +100,21 @@ struct MineCollect {
         .height('100%')
         .columnsTemplate("1fr 1fr 1fr")
         .columnsGap(12)
-      }
+      }.height(this.show ? '80%' : '90%')
+
+      // if (this.show) {
+        Flex({ justifyContent: FlexAlign.Center }) {
+          Column() {
+            Image($r('app.media.delete')).width(20).height(20)
+            Text("删除").fontSize(12).margin({ top: 5 })
+          }
+          .width("100%")
+          .width(40)
+          .margin({ top: 20 })
+        }.backgroundColor(0xf5f5f5).translate({ y: this.y }).animation({
+          duration: 200,
+        })
+      // }
     }.width('100%')
   }
 }
