@@ -7,6 +7,6 @@ export default struct Loading {
      Column(){
        Image($r("app.media.loading")).width(60).height(60)
        Text("加载中...").fontSize(12).margin({top:4}).fontColor(0x000000)
-     }
+     }.position({x:"45%", y:"46%"})
   }
 }

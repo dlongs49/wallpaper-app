@@ -1,10 +1,11 @@
 import router from '@ohos.router'
 import prompt from '@ohos.prompt'
+import window from '@ohos.window'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
-
+import Loading from '../component/Loading'
 @Entry
 @Component
 struct MineCollect {
@@ -16,9 +17,21 @@ struct MineCollect {
   home_scroller: Scroller = new Scroller()
   @State page: PageInter = { offset: 1, limit: 20, count: 0 }
   @State show: boolean = false
-  @State y: number = 30
+  @State y: number = 80
+  @State wwidth: number = 0;
+  @State wheight: number = 0;
+  @State loading:boolean = false
+  async aboutToAppear() {
+    let win = await window.getLastWindow(getContext(this))
+    let area: any = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+    console.log(area.bottomRect.height);
+    console.log(JSON.stringify(area));
+    this.wwidth = area.bottomRect.width;
+    this.wheight = area.bottomRect.top;
+  }
 
   onPageShow() {
+    this.loading = true
     this.getWallpaper()
   }
   // 壁纸
@@ -26,17 +39,22 @@ struct MineCollect {
     try {
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api)
-      if (res.code === 200) {
-        this.page.count = res.data.count
-        this.list = res.data.rows
-      } else {
-        prompt.showToast({
-          message: res.msg,
-          bottom: 400,
-          duration: 2000,
-        });
-      }
+      setTimeout(()=>{
+        this.loading = false
+        if (res.code === 200) {
+          this.page.count = res.data.count
+          this.list = res.data.rows
+        } else {
+          prompt.showToast({
+            message: res.msg,
+            bottom: 400,
+            duration: 2000,
+          });
+        }
+      },2000)
+
     } catch (err) {
+      this.loading = false
       prompt.showToast({
         message: "服务出现异常!",
         bottom: 400,
@@ -45,8 +63,13 @@ struct MineCollect {
     }
   }
 
+  handleTopNav(data) {
+    console.log("****", data)
+  }
+
   build() {
     Column() {
+
       TopNav({ title: "我的收藏", url: "pages/Index" })
 
       Scroll(this.scroller) {
@@ -65,10 +88,10 @@ struct MineCollect {
                   }.alignItems(HorizontalAlign.End)
 
                   if (this.show) {
-                    Checkbox({ name: 'checkbox1', group: 'checkboxGroup', })
+                    Checkbox({ name: item.id, group: 'deleteIds', })
                       .select(true)
                       .selectedColor(0x027eff)
-                      .position({ x: '74%', y: '20%' })
+                      .position({ x: '74%', y: 170 })
                       .onChange((value: boolean) => {
                         console.info('Checkbox1 change is' + value)
                       })
@@ -100,21 +123,40 @@ struct MineCollect {
         .height('100%')
         .columnsTemplate("1fr 1fr 1fr")
         .columnsGap(12)
-      }.height(this.show ? '80%' : '90%')
+      }
+      .height(!this.show ? this.wheight - 300 + 'px' : (this.wheight - 570) + 'px')
+      .edgeEffect(EdgeEffect.Spring)
+      .onScrollEdge(() => {
+        console.log("564654654646546465464")
+      })
+      .onScroll((xOffset: number, yOffset: number) => {
+        console.info(xOffset + ' ' + yOffset)
+      })
+      .onScrollEdge((side: Edge) => {
+        console.info('To the edge')
+      })
+      .onScrollEnd(() => {
+        console.info('Scroll Stop')
+      })
 
-      // if (this.show) {
-        Flex({ justifyContent: FlexAlign.Center }) {
-          Column() {
-            Image($r('app.media.delete')).width(20).height(20)
-            Text("删除").fontSize(12).margin({ top: 5 })
-          }
-          .width("100%")
-          .width(40)
-          .margin({ top: 20 })
-        }.backgroundColor(0xf5f5f5).translate({ y: this.y }).animation({
-          duration: 200,
+      Flex({ justifyContent: FlexAlign.Center }) {
+        Column() {
+          Image($r('app.media.delete')).width(20).height(20)
+          Text("删除").fontSize(12).margin({ top: 5 })
+        }
+        .width("100%")
+        .width(40)
+        .margin({ top: 15 })
+        .onClick(() => {
+          this.show = false
+          this.y = 0
         })
-      // }
+      }.backgroundColor(0xf5f5f5).height("270px").translate({ y: this.y }).animation({
+        duration: 200,
+      })
+      if(this.loading){
+        Loading()
+      }
     }.width('100%')
   }
 }

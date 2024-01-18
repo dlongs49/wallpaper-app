@@ -3,6 +3,9 @@ import router from '@ohos.router'
 export default struct TopNav {
   @Prop title: string
   @Prop url: string
+  handleTopNav:(data)=>void
+  aboutToAppear(){
+  }
   build() {
     Row(){
       Flex({ justifyContent: FlexAlign.SpaceBetween,alignContent: FlexAlign.End , alignItems: ItemAlign.End  }) {
@@ -15,8 +18,10 @@ export default struct TopNav {
           })
         })
         Text(this.title).height(50)
-        Flex(){}.width(40)
+        Flex(){}.width(40).onClick(()=>{
+          this.handleTopNav("topNav")
+        })
       }.height('100%')
-    }.width('88%').height(100)
+    }.width('88%').height("300px").id('topNav')
   }
 }
