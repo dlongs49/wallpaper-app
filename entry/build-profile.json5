@@ -1,6 +1,10 @@
 {
   "apiType": 'stageMode',
   "buildOption": {
+    "sourceOption": {
+      "workers": [
+      ]
+    }
   },
   "targets": [
     {

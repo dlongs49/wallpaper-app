@@ -71,7 +71,6 @@ struct MineCollect {
     Column() {
 
       TopNav({ title: "我的收藏", url: "pages/Index" })
-
       Scroll(this.scroller) {
         Grid() {
           ForEach(this.list, (item: WallItemInter, idx: number) => {
