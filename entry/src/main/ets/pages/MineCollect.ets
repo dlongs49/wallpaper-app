@@ -6,6 +6,7 @@ import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
 import Loading from '../component/Loading'
+import {toast} from '../component/ShowToast'
 @Entry
 @Component
 struct MineCollect {
@@ -45,21 +46,13 @@ struct MineCollect {
           this.page.count = res.data.count
           this.list = res.data.rows
         } else {
-          prompt.showToast({
-            message: res.msg,
-            bottom: 400,
-            duration: 2000,
-          });
+          toast.error(res.msg)
         }
       },2000)
 
     } catch (err) {
       this.loading = false
-      prompt.showToast({
-        message: "服务出现异常!",
-        bottom: 400,
-        duration: 2000,
-      });
+      toast.error()
     }
   }
 
