@@ -5,7 +5,8 @@ import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/i
 import TopNav from '../component/TopNav'
 import Loading from '../component/Loading'
 import {toast} from '../component/ShowToast'
-import {hmRect} from '../utils/tools'
+import {hmRect,setBgColor} from '../utils/tools'
+
 @Entry
 @Component
 struct MineCollect {
@@ -36,7 +37,7 @@ struct MineCollect {
         this.loading = false
         if (res.code === 200) {
           this.page.count = res.data.count
-          this.list = res.data.rows
+          this.list = setBgColor(res.data.rows)
         } else {
           toast.error(res.msg)
         }
@@ -65,7 +66,7 @@ struct MineCollect {
                       .width("100%")
                       .height(200)
                       .borderRadius(10)
-                      .backgroundColor(0xffdbdbdb)
+                      .backgroundColor(item.color)
                     Text("2023/10/12").fontSize(10).margin({ top: 5, right: 5 }).fontColor(0x585858)
                   }.alignItems(HorizontalAlign.End)
 
