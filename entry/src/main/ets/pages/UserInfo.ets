@@ -3,6 +3,7 @@ import prompt from '@ohos.prompt'
 import { SignInter } from '../interface/index'
 import request from '../utils/http'
 import storage from '../utils/storage'
+import TopNav from '../component/TopNav'
 
 @Entry
 @Component
@@ -12,7 +13,8 @@ struct Sign {
     uname: "wallpaper",
     password: "string"
   }
-  @State loading:boolean = false
+  @State loading: boolean = false
+
   onPageShow() {
   }
 
@@ -24,7 +26,7 @@ struct Sign {
       if (res.code === 200) {
         await storage.set('token', res.data)
         router.replaceUrl({
-          url:"pages/Index"
+          url: "pages/Index"
         })
       } else {
         prompt.showToast({
@@ -44,104 +46,72 @@ struct Sign {
     }
   }
 
-  @Builder NavigationTitle() {
-    Column() {
-    }.backgroundColor(0xe9e5fb).height(52).width("100%")
-  }
-
   build() {
-    Navigation() {
-      this.NavigationTitle()
+    Column() {
+      TopNav({ title: "", url: "pages/Index" })
       Column() {
-        Column() {
-        }
-        .height(200)
-        .width("100%")
-        .margin({ left: 10, right: 10, bottom: 70 })
-        .backgroundColor(0xffffff)
-        .borderRadius({
-          bottomLeft: 60,
-          bottomRight: 60
-        })
-
-        Column() {
-          TextInput({ text: this.form.uname, placeholder: '请输入账号', controller: this.controller })
-            .placeholderFont({ size: 14, weight: 400 })
-            .caretColor(0xa794ff)
-            .width('100%')
-            .height('100%')
-            .fontSize(14)
-            .fontColor(0x000000)
-            .fontWeight(500)
-            .backgroundColor(0xffffff)
-            .stateStyles({
-              pressed: {
-                .backgroundColor(Color.Transparent)
-              }
-            })
-            .onChange((value: string) => {
-              this.form.uname = value
-            })
-        }
-        .width("90%")
-        .height(48)
-        .backgroundColor(0xffffff)
-        .borderRadius(12)
-        .borderWidth(2)
-        .borderColor(0xa794ff)
-
-        Column() {
-          TextInput({ text: this.form.password, placeholder: '请输入密码', controller: this.controller })
-            .placeholderFont({ size: 14, weight: 400 })
-            .caretColor(0xa794ff)
-            .type(InputType.Password)
-            .showPasswordIcon(false)
-            .width('100%')
-            .height('100%')
-            .fontSize(14)
-            .fontColor(0x000000)
-            .fontWeight(500)
-            .backgroundColor(0xffffff)
-            .stateStyles({
-              pressed: {
-                .backgroundColor(Color.Transparent)
-              }
-            })
-            .onChange((value: string) => {
-              this.form.password = value
-            })
-        }
-        .width("90%")
-        .height(48)
-        .backgroundColor(0xffffff)
-        .borderRadius(12)
-        .borderWidth(2)
-        .margin({ top: 20 })
-        .borderColor(0xa794ff)
-
-        Button('登录/注册', { type: ButtonType.Capsule, stateEffect: true }){
+        Text("我的信息").fontSize(30).textAlign(TextAlign.Start).fontWeight(200).width("100%")
+        Text("基础资料")
+          .fontSize(10)
+          .fontColor(0x999999)
+          .textAlign(TextAlign.Start)
+          .width("100%")
+          .margin({ top: 20, bottom: 15 })
+        Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+          Text("头像").fontSize(16).fontWeight(800)
           Row() {
-            if(this.loading){
-              LoadingProgress().width(24).height(24).margin({ left: 12 }).color(0xFFFFFF)
-            }
-            Text('登录/注册').fontSize(16).fontColor(0xffffff).margin({ left: 5 })
-          }.alignItems(VerticalAlign.Center).height(46)
+            Image("https://www.dillonl.com/u/snow.jpg").width(40).height(40).border({
+              width: 1,
+              color: 0xeeeeee,
+              radius: 40,
+            })
+            Image($r("app.media.arrow")).width(20).height(25).fillColor(0xcccccc)
+          }
+        }.margin({ bottom: 30 })
+
+        Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+          Text("昵称").fontSize(16).fontWeight(800)
+          Row() {
+            Text("书本书华").fontSize(14).fontColor(0x999999)
+            Image($r("app.media.arrow")).width(20).height(25).fillColor(0xcccccc)
+          }
+        }.margin({ bottom: 30 })
+
+        Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+          Text("注册日期").fontSize(16).fontWeight(800)
+          Row() {
+            Text("注册日期").fontSize(14).fontColor(0x999999)
+            Image($r("app.media.arrow")).width(20).height(25).fillColor(0xcccccc)
+          }
+        }.margin({ bottom: 30 })
+        Column() {}.width("100%").height(1).backgroundColor(0xf2f2f2).margin({top:10,bottom:10})
+        Text("详细资料").fontSize(10)
+          .fontColor(0x999999)
+          .textAlign(TextAlign.Start)
+          .width("100%")
+          .margin({ top: 20, bottom: 20 })
+        Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+          Text("性别").fontSize(16).fontWeight(800)
+          Select([
+            { value: '男', icon: $r("app.media.man") },
+            { value: '女', icon:  $r("app.media.woman") }
+          ])
+            .selected(2)
+            .value('TTTTT')
+            .font({ size: 16, weight: 500 })
+            .fontColor(0x999999)
+            .optionFont({ size: 16, weight: 400 })
+            .onSelect((index: number) => {
+              console.info('Select:' + index)
+            })
+        }.margin({ bottom: 30 })
+        Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+          Text("国家/地区").fontSize(16).fontWeight(800)
+          Text("中国").fontSize(14).fontColor(0x999999)
         }
-        .backgroundColor(0xa794ff)
-        .width("90%")
-        .margin({ top: 40 })
-      }
-      .justifyContent(FlexAlign.Start)
-      .height("100%")
-      .width("100%")
-      .linearGradient({
-        direction: GradientDirection.Top,
-        angle: 180,
-        colors: [[0xe9e5fb, 0.0], [0xffffff, 0.5], [0xffffff, 1.0]]
-      })
-      .onClick(() => {
-        this.sign_in()
-      })
-    }.width('100%').height('100%').hideTitleBar(true)
+
+      }.width("90%")
+    }
+    .width("100%")
   }
 }

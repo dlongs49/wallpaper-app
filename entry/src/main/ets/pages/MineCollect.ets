@@ -1,7 +1,7 @@
 import router from '@ohos.router'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
-import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
+import { PageInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
 import Loading from '../component/Loading'
 import {toast} from '../component/ShowToast'
