@@ -23,6 +23,7 @@ export interface WallItemInter{
   title:string,
   url_type:number,
   url:string,
+  is_checked:boolean
 }
 export interface ParamsInter{
   id?:string,

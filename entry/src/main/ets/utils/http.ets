@@ -33,7 +33,10 @@ export default {
     return new Promise((resolve, reject) => {
       create_http(api, params, http.RequestMethod.POST).then((response) => {
         let result = response.result
-        resolve(result)
+        // 延迟 出现 loading 动画，交互使用
+        setTimeout(()=>{
+          resolve(result)
+        },2000)
       }).catch((error) => {
         reject(error)
       })

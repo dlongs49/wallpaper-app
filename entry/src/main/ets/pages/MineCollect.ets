@@ -1,12 +1,11 @@
 import router from '@ohos.router'
-import prompt from '@ohos.prompt'
-import window from '@ohos.window'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
 import Loading from '../component/Loading'
 import {toast} from '../component/ShowToast'
+import {hmRect} from '../utils/tools'
 @Entry
 @Component
 struct MineCollect {
@@ -15,20 +14,14 @@ struct MineCollect {
   @State currentIndex: number = 0
   @State list: Array<any> = []
   scroller: Scroller = new Scroller()
-  home_scroller: Scroller = new Scroller()
   @State page: PageInter = { offset: 1, limit: 20, count: 0 }
   @State show: boolean = false
   @State y: number = 80
-  @State wwidth: number = 0;
-  @State wheight: number = 0;
+  @State hmHeight: number = 0;
   @State loading:boolean = false
   async aboutToAppear() {
-    let win = await window.getLastWindow(getContext(this))
-    let area: any = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
-    console.log(area.bottomRect.height);
-    console.log(JSON.stringify(area));
-    this.wwidth = area.bottomRect.width;
-    this.wheight = area.bottomRect.top;
+    const hr = await hmRect()
+    this.hmHeight = hr.hmHeight
   }
 
   onPageShow() {
@@ -40,7 +33,6 @@ struct MineCollect {
     try {
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api)
-      setTimeout(()=>{
         this.loading = false
         if (res.code === 200) {
           this.page.count = res.data.count
@@ -48,8 +40,6 @@ struct MineCollect {
         } else {
           toast.error(res.msg)
         }
-      },2000)
-
     } catch (err) {
       this.loading = false
       toast.error()
@@ -80,18 +70,21 @@ struct MineCollect {
                   }.alignItems(HorizontalAlign.End)
 
                   if (this.show) {
-                    Checkbox({ name: item.id, group: 'deleteIds', })
-                      .select(true)
+                    Checkbox({ name: item.id, group: 'checkIds', })
+                      .select(item.is_checked)
                       .selectedColor(0x027eff)
                       .position({ x: '74%', y: 170 })
                       .onChange((value: boolean) => {
-                        console.info('Checkbox1 change is' + value)
+                        // 选中当前项更改选中状态
+                        this.list[idx].is_checked = value
                       })
                   }
                 }.gesture(
                   LongPressGesture({ repeat: true, duration: 200 })
                     .onAction((event: GestureEvent) => {
                       if (event.repeat) {
+                        // 长按选中当前这一项 使其删除控件出现 更改 y 执行动画
+                        this.list[idx].is_checked = true
                         this.show = true
                         this.y = 0
                       }
@@ -116,7 +109,7 @@ struct MineCollect {
         .columnsTemplate("1fr 1fr 1fr")
         .columnsGap(12)
       }
-      .height(!this.show ? this.wheight - 300 + 'px' : (this.wheight - 570) + 'px')
+      .height(!this.show ? this.hmHeight - 300 + 'px' : (this.hmHeight - 570) + 'px')
       .edgeEffect(EdgeEffect.Spring)
       .onScrollEdge(() => {
         console.log("564654654646546465464")
