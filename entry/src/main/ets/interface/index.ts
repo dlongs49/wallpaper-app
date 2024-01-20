@@ -35,5 +35,6 @@ export interface UinfoInter{
   uname:string,
   sex?:number,
   sex_tit?:string,
-  nation?:string
+  nation?:string,
+  reg_time?:string,
 }

@@ -8,14 +8,79 @@ import Loading from '../component/Loading'
 import { toast } from '../component/ShowToast'
 import { touchBgColor } from '../utils/tools'
 
+
+@CustomDialog
+struct DialogEditUname {
+  @Link uname: string
+  inputController: TextInputController = new TextInputController()
+  controller: CustomDialogController
+  onCancel: () => void
+  onSubmit: () => void
+
+  build() {
+    Column() {
+      Text("编辑昵称").fontSize(18)
+      Column() {
+        TextInput({ text: this.uname, controller: this.inputController })
+          .placeholderFont({ size: 14, weight: 400 })
+          .caretColor(0xa794ff)
+          .showPasswordIcon(false)
+          .width('100%')
+          .height('100%')
+          .fontSize(14)
+          .fontColor(0x000000)
+          .fontWeight(500)
+          .backgroundColor(0xffffff)
+          .stateStyles({
+            pressed: {
+              .backgroundColor(Color.Transparent)
+            }
+          })
+          .onChange((value: any) => {
+            this.uname = value;
+          })
+      }
+      .width("90%")
+      .height(48)
+      .backgroundColor(0xffffff)
+      .borderRadius(12)
+      .borderWidth(2)
+      .margin({ top: 20, bottom: 20 })
+      .borderColor(0xa794ff)
+
+      Flex({ justifyContent: FlexAlign.Center }) {
+        Button('取消', { type: ButtonType.Capsule, stateEffect: true })
+          .backgroundColor(0xeeeeee)
+          .width("40%")
+          .height(44)
+          .fontColor(0x000000)
+          .onClick(() => {
+            this.controller.close()
+          })
+        Button('确定', { type: ButtonType.Capsule, stateEffect: true })
+          .backgroundColor(0xa794ff)
+          .width("40%")
+          .height(44)
+          .margin({ left: 15 })
+          .fontColor(0xffffff)
+          .onClick(() => {
+            this.onSubmit()
+            this.controller.close()
+          })
+      }.margin({ top: 10 })
+
+    }.backgroundColor(0xffffff).borderRadius(14).padding({ top: 25, bottom: 20 }).width("90%")
+  }
+}
+
+
 @Entry
 @Component
-struct Sign {
+struct UserInfo {
   controller: TextInputController = new TextInputController()
-  @State form: SignInter = {
-    uname: "wallpaper",
-    password: "string"
-  }
+  @State uname: string = ""
+  @State sex_tit: string = "男"
+  @State sex: string = "1"
   @State touchBgColor_1: number = 0xffffff
   @State touchBgColor_2: number = 0xffffff
   @State touchBgColor_3: number = 0xffffff
@@ -30,12 +95,22 @@ struct Sign {
   onPageShow() {
     this.getUserInfo()
   }
+
+  onCancel() {
+  }
+
+  onSubmit() {
+    this.dialogController.close()
+    this.updateUserInfo({uname:this.uname})
+  }
   //个人信息
   async getUserInfo() {
     try {
       const res: any = await request.get("/api/sign/get_user")
       if (res.code === 200) {
         this.info = res.data
+        let dateStr: string[] = new Date(res.data.reg_time).toLocaleDateString().split("/")
+        this.info.reg_time = `${dateStr[2]}-${dateStr[0]}-${dateStr[1]}`
       } else {
         toast.error(res.msg)
       }
@@ -43,6 +118,37 @@ struct Sign {
       toast.error()
     }
   }
+  // 更新用户信息
+  async updateUserInfo(params) {
+    try {
+      const res: any = await request.post("/api/sign/put_user", params)
+      if (res.code === 200) {
+        if (params.uname) {
+          this.info.uname = this.uname
+          this.dialogController.close()
+        }
+        if (params.sex) {
+          this.info.sex_tit = this.sex_tit
+        }
+      } else {
+        toast.error(res.msg)
+      }
+    } catch (err) {
+      toast.error()
+    }
+  }
+
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: DialogEditUname({
+      onCancel: this.onCancel,
+      onSubmit: this.onSubmit,
+      uname: $uname,
+    }),
+    alignment: DialogAlignment.Bottom,
+    offset: { dx: 0, dy: -40 },
+    autoCancel: true,
+    customStyle: true
+  })
 
   build() {
     Column() {
@@ -82,11 +188,21 @@ struct Sign {
             .height("100%")
             .lineHeight(26)
           Row() {
-            Text("书本书华").fontSize(14).fontColor(0x999999)
+            Text(this.info.uname).fontSize(14).fontColor(0x999999)
             Image($r("app.media.arrow")).width(20).height(25).fillColor(0xcccccc)
           }.height("100%").width("70%").justifyContent(FlexAlign.End).margin({ right: 25 })
-        }.width("100%").height(60).backgroundColor(this.touchBgColor_2).onTouch((event) => {
+        }
+        .width("100%")
+        .height(60)
+        .backgroundColor(this.touchBgColor_2)
+        .onTouch((event) => {
           this.touchBgColor_2 = touchBgColor(event)
+        })
+        .onClick(() => {
+          if (this.dialogController != undefined) {
+            this.uname = this.info.uname
+            this.dialogController.open()
+          }
         })
 
         Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -97,7 +213,7 @@ struct Sign {
             .height("100%")
             .lineHeight(26)
           Row() {
-            Text("注册日期").fontSize(14).fontColor(0x999999)
+            Text(this.info.reg_time).fontSize(14).fontColor(0x999999)
             Image($r("app.media.arrow")).width(20).height(25).fillColor(0xcccccc)
           }.height("100%").width("70%").justifyContent(FlexAlign.End).margin({ right: 25 })
         }.width("100%").height(60).backgroundColor(this.touchBgColor_3).onTouch((event) => {
@@ -122,16 +238,17 @@ struct Sign {
             .lineHeight(26)
           Row() {
             Select([
+              { value: '女', icon: $r("app.media.woman") },
               { value: '男', icon: $r("app.media.man") },
-              { value: '女', icon: $r("app.media.woman") }
             ])
-              .selected(2)
-              .value('TTTTT')
+              .value(this.info.sex_tit)
               .font({ size: 16, weight: 500 })
               .fontColor(0x999999)
               .optionFont({ size: 16, weight: 400 })
               .onSelect((index: number) => {
-                console.info('Select:' + index)
+                this.sex_tit = index == 1 ? "男" : "女"
+                this.sex = index == 1 ? "1" : "0"
+                this.updateUserInfo({ sex: this.sex, sex_tit: this.sex_tit })
               })
           }.height("100%").width("70%").justifyContent(FlexAlign.End).margin({ right: 25 })
 
