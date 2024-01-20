@@ -4,7 +4,9 @@ import storage from './storage'
 import { base_url } from './env'
 
 async function create_http(api: string, extraData: any, method: http.RequestMethod) {
-  const token = await storage.get("token")
+  const tokens = await storage.get("token")
+  // 测试使用 5天生效期
+  let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJjNDcwM2UyZC04MWY2LTRmYzEtOGYwMi04YWZiZmNlZGJkYTciLCJwYXNzd29yZCI6ImI0NWNmZmUwODRkZDNkMjBkOTI4YmVlODVlN2IwZjIxIiwiaWF0IjoxNzA1NzU3MTIwLCJleHAiOjE3MDYxODkxMjB9.Lum1YbXqYs88rutX3owcLVQwU0aTX5COfMx6W5nKjig'
   return httpRequest.request(base_url + api, {
     method,
     connectTimeout: 20000,

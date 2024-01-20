@@ -209,7 +209,7 @@ struct Index {
                 .fontSize(18)
                 .margin({ top: 10 })
             }.height(100).margin({ top: 50 }).onClick(() => {
-              if (!this.info.uname) {
+              if (this.info.uname) {
                 router.pushUrl({ url: "pages/UserInfo" })
               } else {
                 router.pushUrl({ url: "pages/Sign" })

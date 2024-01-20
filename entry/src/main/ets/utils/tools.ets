@@ -15,3 +15,12 @@ export const setBgColor = (data:any)=>{
     return {...x,color: colorList[i%colorList.length]}
   })
 }
+// 手指按下控件背景色交互
+export const touchBgColor=(event:any)=>{
+  if (event.type === TouchType.Down) {
+    return 0xeeeeee
+  }
+  if (event.type === TouchType.Up) {
+    return 0xffffff
+  }
+}
