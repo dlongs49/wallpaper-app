@@ -1,5 +1,6 @@
-import router from '@ohos.router'
-import prompt from '@ohos.prompt'
+import picker from '@ohos.file.picker';
+import uploadRequest from '@ohos.request';
+import fs from '@ohos.file.fs';
 import { SignInter, UinfoInter } from '../interface/index'
 import request from '../utils/http'
 import storage from '../utils/storage'
@@ -7,6 +8,7 @@ import TopNav from '../component/TopNav'
 import Loading from '../component/Loading'
 import { toast } from '../component/ShowToast'
 import { touchBgColor } from '../utils/tools'
+import { base_url } from '../utils/env';
 
 
 @CustomDialog
@@ -89,6 +91,7 @@ struct UserInfo {
   @State loading: boolean = false
   @State info: UinfoInter = {
     avatar: "",
+    sex_tit:"",
     uname: ""
   }
 
@@ -101,7 +104,57 @@ struct UserInfo {
 
   onSubmit() {
     this.dialogController.close()
-    this.updateUserInfo({uname:this.uname})
+    this.updateUserInfo({ uname: this.uname })
+  }
+  // 打开相册
+  async selectImage() {
+    try {
+      let PhotoSelectOptions = new picker.PhotoSelectOptions();
+      PhotoSelectOptions.MIMEType = picker.PhotoViewMIMETypes.IMAGE_TYPE;
+      PhotoSelectOptions.maxSelectNumber = 1
+      const photoPicker = new picker.PhotoViewPicker();
+      const result = await photoPicker.select(PhotoSelectOptions)
+      this.uploadAvatar(result)
+      console.log("选择的图片文件：", JSON.stringify(result))
+    } catch (e) {
+      console.log("打开相册错误：", JSON.stringify(e))
+    }
+  }
+  // 上传头像
+  async uploadAvatar(data: any) {
+    try {
+      const file = fs.openSync(data.photoUris[0],fs.OpenMode.READ_ONLY)
+      const spm = new Date().getTime().toString()
+      const dstPath = getContext(this).cacheDir +"/"+ spm + '.png'
+      fs.copyFileSync(file.fd, dstPath);
+      let uri = "internal://cache/"+dstPath.split("cache/")[1];
+      console.log("***********",dstPath,uri)
+      const uploadTask  = await uploadRequest.uploadFile(getContext(this), {
+        url: base_url + '/api/upload/avatar',
+        header: { 'Accept': '*/*' },
+        method: "POST",
+        files: [{ filename: `${spm}.png`, name: "avatar", uri, type: 'image/png' }],
+        data: []
+      })
+      uploadTask.on("complete",(data)=>{
+        this.getAvatarPath(data[0].path)
+      })
+    } catch (e) {
+      console.log("上传图片异常：", JSON.stringify(e))
+    }
+  }
+  // 获取上传的头像路径
+  async getAvatarPath(file_name){
+    try {
+      const res: any = await request.get(`/api/upload/path?file_name=${file_name}`)
+      if(res.code === 200){
+        this.updateUserInfo({avatar: res.data.file_path})
+      }else{
+        toast.error("未找到该头像资源")
+      }
+    }catch (e){
+      toast.error()
+    }
   }
   //个人信息
   async getUserInfo() {
@@ -129,6 +182,9 @@ struct UserInfo {
         }
         if (params.sex) {
           this.info.sex_tit = this.sex_tit
+        }
+        if(params.avatar) {
+          this.info.avatar = params.avatar
         }
       } else {
         toast.error(res.msg)
@@ -169,7 +225,7 @@ struct UserInfo {
             .height("100%")
             .lineHeight(26)
           Row() {
-            Image("https://www.dillonl.com/u/snow.jpg").width(40).height(40).border({
+            Image(this.info.avatar ? base_url + this.info.avatar : $r('app.media.user')).width(40).height(40).border({
               width: 1,
               color: 0xeeeeee,
               radius: 40,
@@ -178,6 +234,7 @@ struct UserInfo {
           }.height("100%").width("70%").justifyContent(FlexAlign.End).margin({ right: 25 })
         }.width("100%").height(60).backgroundColor(this.touchBgColor_1).onTouch((event) => {
           this.touchBgColor_1 = touchBgColor(event)
+          this.selectImage()
         })
 
         Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -263,7 +320,7 @@ struct UserInfo {
             .margin({ left: 20 })
             .height("100%")
             .lineHeight(26)
-          Text("中国")
+          Text(this.info.nation)
             .fontSize(14)
             .fontColor(0x999999)
             .height("100%")

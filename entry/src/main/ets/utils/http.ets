@@ -6,7 +6,7 @@ import { base_url } from './env'
 async function create_http(api: string, extraData: any, method: http.RequestMethod) {
   const tokens = await storage.get("token")
   // 测试使用 5天生效期
-  let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJjNDcwM2UyZC04MWY2LTRmYzEtOGYwMi04YWZiZmNlZGJkYTciLCJwYXNzd29yZCI6ImI0NWNmZmUwODRkZDNkMjBkOTI4YmVlODVlN2IwZjIxIiwiaWF0IjoxNzA1NzU3MTIwLCJleHAiOjE3MDYxODkxMjB9.Lum1YbXqYs88rutX3owcLVQwU0aTX5COfMx6W5nKjig'
+  let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI5YTk5MDNjYS0wZjA4LTRkNmYtYmQwNC1jNWZkZjY0ODE2MjQiLCJwYXNzd29yZCI6ImI0NWNmZmUwODRkZDNkMjBkOTI4YmVlODVlN2IwZjIxIiwiaWF0IjoxNzA1ODIxMjY5LCJleHAiOjE3MDU4MzIwNjl9.CXZaXN4fCla95ndSCuH8kCYB7FYbzs4tgUp6_WSmMD4'
   return httpRequest.request(base_url + api, {
     method,
     connectTimeout: 20000,
