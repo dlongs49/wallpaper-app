@@ -38,6 +38,9 @@
       },
       {
         "name" : "ohos.permission.SET_WALLPAPER"
+      },
+      {
+        "name" : "ohos.permission.GET_NETWORK_INFO"
       }
     ]
   }

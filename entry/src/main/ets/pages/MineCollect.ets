@@ -8,7 +8,7 @@ import NoData from '../component/NoData'
 import { toast } from '../component/ShowToast'
 import { hmRect, setBgColor } from '../utils/tools'
 import emitter from '@ohos.events.emitter'
-
+import observer from '@ohos.telephony.observer';
 @Entry
 @Component
 struct MineCollect {
@@ -26,6 +26,9 @@ struct MineCollect {
   async aboutToAppear() {
     const hr = await hmRect()
     this.hmHeight = hr.hmHeight
+    observer.on('networkStateChange', data => {
+      console.log("on networkStateChange, data:" + JSON.stringify(data));
+    });
   }
 
   onPageShow() {
