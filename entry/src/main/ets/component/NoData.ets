@@ -10,6 +10,9 @@ export default struct TopNav {
     if(this.type == "page"){
       this.hmHeight = (hr.hmHeight - 300) + "px"
     }
+    if(this.type == "bar"){
+      this.hmHeight = (hr.hmHeight - 56) + "px"
+    }
   }
   build() {
     Column(){

@@ -5,6 +5,7 @@ import request from '../utils/http'
 import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 import Loading from '../component/Loading'
+import HomeBar from './navbar/home_bar';
 @Entry
 @Component
 struct Index {
@@ -125,42 +126,43 @@ struct Index {
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
         TabContent() {
           if (this.currentIndex == 0) {
-            WaterFlow({ scroller: this.scroller }) {
-              ForEach(this.list, (item: WallItemInter, idx: number) => {
-                FlowItem() {
-                  Column() {
-                    if (idx === 0) {
-                      Row() {
-                        Image("https://www.dillonl.com/u/demo.png").width('100%').height(50).borderRadius(10)
-                        Text("热门IP壁纸").offset({ x: -130, y: 2 }).fontColor(0xffffff)
-                      }.width('100%').height(50).margin({ bottom: 14 })
-                    }
-                    Column() {
-                      Image(item.url_type == 0 ? base_url + item.url : item.url)
-                        .width("100%")
-                        .height(320)
-                        .borderRadius(10)
-                        .backgroundColor(0xffdbdbdb)
-                      Text(item.title).fontSize(14).margin({ top: '5' })
-                    }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
-                      router.pushUrl({
-                        url: "pages/SetWallpaper",
-                        params: {
-                          id: item.id
-                        }
-                      })
-                    })
-                  }.alignItems(HorizontalAlign.Start)
-                }.width("50%").margin({ bottom: 18 })
-
-              }, item => item)
-
-            }
-            .width('95%')
-            .height('100%')
-            .layoutDirection(FlexDirection.Column)
-            .columnsTemplate("1fr 1fr")
-            .columnsGap(12)
+            HomeBar()
+            // WaterFlow({ scroller: this.scroller }) {
+            //   ForEach(this.list, (item: WallItemInter, idx: number) => {
+            //     FlowItem() {
+            //       Column() {
+            //         if (idx === 0) {
+            //           Row() {
+            //             Image("https://www.dillonl.com/u/demo.png").width('100%').height(50).borderRadius(10)
+            //             Text("热门IP壁纸").offset({ x: -130, y: 2 }).fontColor(0xffffff)
+            //           }.width('100%').height(50).margin({ bottom: 14 })
+            //         }
+            //         Column() {
+            //           Image(item.url_type == 0 ? base_url + item.url : item.url)
+            //             .width("100%")
+            //             .height(320)
+            //             .borderRadius(10)
+            //             .backgroundColor(0xffdbdbdb)
+            //           Text(item.title).fontSize(14).margin({ top: '5' })
+            //         }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
+            //           router.pushUrl({
+            //             url: "pages/SetWallpaper",
+            //             params: {
+            //               id: item.id
+            //             }
+            //           })
+            //         })
+            //       }.alignItems(HorizontalAlign.Start)
+            //     }.width("50%").margin({ bottom: 18 })
+            //
+            //   }, item => item)
+            //
+            // }
+            // .width('95%')
+            // .height('100%')
+            // .layoutDirection(FlexDirection.Column)
+            // .columnsTemplate("1fr 1fr")
+            // .columnsGap(12)
           }
 
         }.tabBar(this.TabBuilder(0, '首页'))
