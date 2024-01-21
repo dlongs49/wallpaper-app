@@ -1,10 +1,12 @@
 import router from '@ohos.router'
-import prompt from '@ohos.prompt'
 import request from '../utils/http'
 import { base_url } from '../utils/env'
-import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
+import { PageInter,  WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
-
+import Loading from '../component/Loading'
+import NoData from '../component/NoData'
+import { toast } from '../component/ShowToast'
+import { hmRect, setBgColor } from '../utils/tools'
 @Entry
 @Component
 struct Wallpaper {
@@ -13,33 +15,27 @@ struct Wallpaper {
   @State currentIndex: number = 0
   @State list: Array<any> = []
   scroller: Scroller = new Scroller()
-  home_scroller: Scroller = new Scroller()
   @State page: PageInter = { offset: 1, limit: 20, count: 0 }
-
+  @State loading: boolean = false
   onPageShow() {
     this.getWallpaper()
   }
   // 壁纸
   async getWallpaper() {
     try {
+      this.loading = true
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api)
+      this.loading = false
       if (res.code === 200) {
         this.page.count = res.data.count
-        this.list = res.data.rows
+        this.list = setBgColor(res.data.rows)
       } else {
-        prompt.showToast({
-          message: res.msg,
-          bottom: 400,
-          duration: 2000,
-        });
+        toast.error(res.msg)
       }
     } catch (err) {
-      prompt.showToast({
-        message: "服务出现异常!",
-        bottom: 400,
-        duration: 2000,
-      });
+      this.loading = false
+      toast.error()
     }
   }
 
@@ -47,6 +43,9 @@ struct Wallpaper {
   build() {
     Column() {
       TopNav({ title:"壁纸中心", url:"pages/Index" })
+      if (this.list.length === 0) {
+        NoData({ type: "page", state: 0, })
+      }
       Scroll(this.scroller) {
         Grid() {
           ForEach(this.list, (item: WallItemInter, idx: number) => {
@@ -57,7 +56,7 @@ struct Wallpaper {
                     .width("100%")
                     .height(320)
                     .borderRadius(10)
-                    .backgroundColor(0xffdbdbdb)
+                    .backgroundColor(item.color)
                   Text(item.title).fontSize(14).margin({ top:10,left:5 })
                 }.width("100%").alignItems(HorizontalAlign.Start).onClick((e: ClickEvent) => {
                   router.pushUrl({
@@ -75,6 +74,9 @@ struct Wallpaper {
         .height('100%')
         .columnsTemplate("1fr 1fr")
         .columnsGap(12)
+      }
+      if (this.loading) {
+        Loading()
       }
     }.width('100%')
   }
