@@ -19,7 +19,7 @@ struct MineCollect {
   @State currentIndex: number = 0
   @State list: Array<any> = []
   scroller: Scroller = new Scroller()
-  @State page: PageInter = { offset: 1, limit: 20, count: 0 }
+  @State page: PageInter = { offset: 1, limit: 20, count: -1 }
   @State show: boolean = false
   @State y: number = 80
   @State hmHeight: number = 0;
@@ -102,7 +102,7 @@ struct MineCollect {
     Column() {
 
       TopNav({ title: "我的收藏", url: "pages/Index" })
-      if (this.list.length === 0) {
+      if (this.page.count === 0) {
         NoData({ type: "page", state: 0, })
       }
       Scroll(this.scroller) {
