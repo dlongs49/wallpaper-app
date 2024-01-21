@@ -38,3 +38,11 @@ export interface UinfoInter{
   nation?:string,
   reg_time?:string,
 }
+export interface CollectWallInter{
+  id:string,
+  wallpaper_type:number,
+  wallpaper_url:string,
+  create_time:string,
+  is_checked:boolean,
+  color:number
+}
