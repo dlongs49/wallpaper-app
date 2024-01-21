@@ -3,19 +3,20 @@ import { OpearInter, UinfoInter } from '../../interface/index'
 import { base_url } from '../../utils/env'
 import request from '../../utils/http'
 import { toast } from '../../component/ShowToast'
+import { touchBgColor } from '../../utils/tools'
 
 @Component
 export default struct MineBar {
   @State opearList: Array<OpearInter> = [
-    { icon: $r("app.media.order"), title: "我的壁纸",url:"pages/MineWall" },
-    { icon: $r("app.media.love"), title: "我的收藏",url:"pages/MineCollect" },
-    { icon: $r("app.media.about"), title: "关于壁纸",url:"pages/AboutUs" },
+    { icon: $r("app.media.order"), title: "我的壁纸", url: "pages/MineWall", touchColor: Color.Transparent },
+    { icon: $r("app.media.love"), title: "我的收藏", url: "pages/MineCollect", touchColor: Color.Transparent },
+    { icon: $r("app.media.about"), title: "关于壁纸", url: "pages/AboutUs", touchColor: Color.Transparent },
   ]
+  @State touchBgColor:number[] = [Color.Transparent,Color.Transparent,Color.Transparent]
   @State info: UinfoInter = {
     avatar: "",
     uname: ""
   }
-
   aboutToAppear() {
     this.getUserInfo()
   }
@@ -35,6 +36,7 @@ export default struct MineBar {
       toast.error()
     }
   }
+
   build() {
     Column() {
       Flex({
@@ -60,9 +62,9 @@ export default struct MineBar {
       })
 
       List() {
-        ForEach(this.opearList, (item) => {
+        ForEach(this.opearList, (item, i: number) => {
           ListItem() {
-            Flex({ justifyContent: FlexAlign.SpaceBetween }) {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
               Row() {
                 Image(item.icon).width(20).height(20)
                 Text(`${item.title}`).fontSize(14).margin({ left: 14 })
@@ -70,12 +72,22 @@ export default struct MineBar {
 
               Image($r("app.media.arrow")).width(20).height(20)
             }
-          }.margin({ bottom: 30 }).onClick(() => {
-            router.pushUrl({ url: item.url})
+            .width("90%")
+            .height("100%")
+            .margin({ left: 10, right: 10 })
+          }
+          .height(65)
+          .width("100%")
+          .backgroundColor(this.touchBgColor[i])
+          .onTouch((event) => {
+            this.touchBgColor[i] = touchBgColor(event) === 0xffffff ? Color.Transparent : touchBgColor(event)
+          })
+          .onClick(() => {
+            router.pushUrl({ url: item.url })
           })
         })
 
-      }.width("90%").margin({ top: 50 })
+      }.width("100%").margin({ top: 50 })
 
       if (this.info.id) {
         Button('退出登录', { type: ButtonType.Capsule, stateEffect: true }).backgroundColor(0xa99ee9).width("90%")

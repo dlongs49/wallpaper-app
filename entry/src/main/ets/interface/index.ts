@@ -1,7 +1,8 @@
 export interface OpearInter{
   icon: unknown,
   title: string,
-  url: string
+  url: string,
+  touchColor?:number,
 }
 
 export interface SignInter{

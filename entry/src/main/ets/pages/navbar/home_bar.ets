@@ -58,7 +58,7 @@ export default struct HomeBar {
               Column() {
                 Image(item.url_type == 0 ? base_url + item.url : item.url)
                   .width("100%")
-                  .height(320)
+                  .height(300)
                   .borderRadius(10)
                   .backgroundColor(item.color)
                 Text(item.title).fontSize(14).margin({ top: '5' })
@@ -71,7 +71,7 @@ export default struct HomeBar {
                 })
               })
             }.alignItems(HorizontalAlign.Start)
-          }.width("50%").margin({ bottom: 18 })
+          }.width("45%").margin({ bottom: 18 })
 
         }, item => item)
 
@@ -80,7 +80,7 @@ export default struct HomeBar {
       .height('100%')
       .layoutDirection(FlexDirection.Column)
       .columnsTemplate("1fr 1fr")
-      .columnsGap(12)
+      .columnsGap(16)
       .onReachEnd(() => {
         console.info("onReachEnd")
       })
