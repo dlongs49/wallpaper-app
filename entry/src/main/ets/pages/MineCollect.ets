@@ -4,8 +4,10 @@ import { base_url } from '../utils/env'
 import { PageInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
 import Loading from '../component/Loading'
-import {toast} from '../component/ShowToast'
-import {hmRect,setBgColor} from '../utils/tools'
+import NoData from '../component/NoData'
+import { toast } from '../component/ShowToast'
+import { hmRect, setBgColor } from '../utils/tools'
+import emitter from '@ohos.events.emitter'
 
 @Entry
 @Component
@@ -19,7 +21,8 @@ struct MineCollect {
   @State show: boolean = false
   @State y: number = 80
   @State hmHeight: number = 0;
-  @State loading:boolean = false
+  @State loading: boolean = false
+
   async aboutToAppear() {
     const hr = await hmRect()
     this.hmHeight = hr.hmHeight
@@ -28,33 +31,37 @@ struct MineCollect {
   onPageShow() {
     this.loading = true
     this.getWallpaper()
+    var innerEvent = { eventId: 10000 }
+    emitter.on(innerEvent, this.onEventHandel.bind(this))
+  }
+
+  onEventHandel() {
   }
   // 壁纸
   async getWallpaper() {
     try {
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api)
-        this.loading = false
-        if (res.code === 200) {
-          this.page.count = res.data.count
-          this.list = setBgColor(res.data.rows)
-        } else {
-          toast.error(res.msg)
-        }
+      this.loading = false
+      if (res.code === 200) {
+        this.page.count = res.data.count
+        this.list = setBgColor(res.data.rows)
+      } else {
+        toast.error(res.msg)
+      }
     } catch (err) {
       this.loading = false
       toast.error()
     }
   }
 
-  handleTopNav(data) {
-    console.log("****", data)
-  }
-
   build() {
     Column() {
 
       TopNav({ title: "我的收藏", url: "pages/Index" })
+      if (this.list.length === 0) {
+        NoData({ type: "page", state: 0, })
+      }
       Scroll(this.scroller) {
         Grid() {
           ForEach(this.list, (item: WallItemInter, idx: number) => {
@@ -140,7 +147,8 @@ struct MineCollect {
       }.backgroundColor(0xf5f5f5).height("270px").translate({ y: this.y }).animation({
         duration: 200,
       })
-      if(this.loading){
+
+      if (this.loading) {
         Loading()
       }
     }.width('100%')

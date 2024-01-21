@@ -65,9 +65,18 @@ struct DialogEditUname {
           .height(44)
           .margin({ left: 15 })
           .fontColor(0xffffff)
-          .onClick(() => {
+          .onClick(async () => {
+            try {
+              const res: any = await request.post("/api/sign/put_user", { uname: this.uname })
+              if (res.code === 200) {
+              } else {
+                toast.error(res.msg)
+              }
+            } catch (err) {
+              toast.error()
+            }
             this.onSubmit()
-            this.controller.close()
+
           })
       }.margin({ top: 10 })
 
@@ -91,7 +100,7 @@ struct UserInfo {
   @State loading: boolean = false
   @State info: UinfoInter = {
     avatar: "",
-    sex_tit:"",
+    sex_tit: "",
     uname: ""
   }
 
@@ -100,11 +109,12 @@ struct UserInfo {
   }
 
   onCancel() {
+    this.dialogController.close()
   }
 
   onSubmit() {
     this.dialogController.close()
-    this.updateUserInfo({ uname: this.uname })
+    this.info.uname = this.uname
   }
   // 打开相册
   async selectImage() {
@@ -123,20 +133,20 @@ struct UserInfo {
   // 上传头像
   async uploadAvatar(data: any) {
     try {
-      const file = fs.openSync(data.photoUris[0],fs.OpenMode.READ_ONLY)
+      const file = fs.openSync(data.photoUris[0], fs.OpenMode.READ_ONLY)
       const spm = new Date().getTime().toString()
-      const dstPath = getContext(this).cacheDir +"/"+ spm + '.png'
+      const dstPath = getContext(this).cacheDir + "/" + spm + '.png'
       fs.copyFileSync(file.fd, dstPath);
-      let uri = "internal://cache/"+dstPath.split("cache/")[1];
-      console.log("***********",dstPath,uri)
-      const uploadTask  = await uploadRequest.uploadFile(getContext(this), {
+      let uri = "internal://cache/" + dstPath.split("cache/")[1];
+      console.log("***********", dstPath, uri)
+      const uploadTask = await uploadRequest.uploadFile(getContext(this), {
         url: base_url + '/api/upload/avatar',
         header: { 'Accept': '*/*' },
         method: "POST",
         files: [{ filename: `${spm}.png`, name: "avatar", uri, type: 'image/png' }],
         data: []
       })
-      uploadTask.on("complete",(data)=>{
+      uploadTask.on("complete", (data) => {
         this.getAvatarPath(data[0].path)
       })
     } catch (e) {
@@ -144,15 +154,15 @@ struct UserInfo {
     }
   }
   // 获取上传的头像路径
-  async getAvatarPath(file_name){
+  async getAvatarPath(file_name) {
     try {
       const res: any = await request.get(`/api/upload/path?file_name=${file_name}`)
-      if(res.code === 200){
-        this.updateUserInfo({avatar: res.data.file_path})
-      }else{
+      if (res.code === 200) {
+        this.updateUserInfo({ avatar: res.data.file_path })
+      } else {
         toast.error("未找到该头像资源")
       }
-    }catch (e){
+    } catch (e) {
       toast.error()
     }
   }
@@ -183,7 +193,7 @@ struct UserInfo {
         if (params.sex) {
           this.info.sex_tit = this.sex_tit
         }
-        if(params.avatar) {
+        if (params.avatar) {
           this.info.avatar = params.avatar
         }
       } else {
