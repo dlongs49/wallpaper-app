@@ -11,9 +11,6 @@ import { hmRect, setBgColor } from '../utils/tools'
 @Entry
 @Component
 struct Wallpaper {
-  @State fontColor: string = '#182431'
-  @State selectedFontColor: string = '#e6dd23'
-  @State currentIndex: number = 0
   @State list: Array<any> = []
   scroller: Scroller = new Scroller()
   @State page: PageInter = { offset: 1, limit: 20, count: -1 }
@@ -36,7 +33,7 @@ struct Wallpaper {
     try {
       this.loading = true
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
-      const res: any = await request.post(api, { type_id: this.type_id })
+      const res: any = await request.post(api, { type_id: !this.type_id || "" })
       this.loading = false
       if (res.code === 200) {
         this.page.count = res.data.count
@@ -77,15 +74,26 @@ struct Wallpaper {
                   })
                 })
               }.alignItems(HorizontalAlign.Start)
-            }.width("50%").margin({ bottom: 18 })
+            }.width("48%").margin({ bottom: 18 })
           }, item => item)
         }
-        .width('90%')
+        .width('92%')
         .height(this.hmHeight)
         .columnsTemplate("1fr 1fr")
         .columnsGap(12)
+        .rowsGap(12)
+        .layoutDirection(GridDirection.Row)
       }
-
+      .height(this.hmHeight)
+      .width("100%")
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
+      .onScroll((xOffset: number, yOffset: number) => {
+        console.info(xOffset + ' ' + yOffset)
+      })
+      .onScrollEdge((side:Edge) => {
+        console.log("********",side)
+      })
       if (this.loading) {
         Loading()
       }

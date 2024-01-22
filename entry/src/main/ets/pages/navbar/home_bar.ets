@@ -17,6 +17,7 @@ export default struct HomeBar {
   aboutToAppear() {
     this.getWallpaper()
   }
+
   // 壁纸
   async getWallpaper() {
     try {
