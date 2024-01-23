@@ -13,12 +13,13 @@ import { hmRect, setBgColor } from '../utils/tools'
 struct Wallpaper {
   @State list: Array<any> = []
   scroller: Scroller = new Scroller()
-  @State page: PageInter = { offset: 1, limit: 8, count: -1 }
+  @State page: PageInter = { offset: 1, limit: 6, count: -1 }
   @State loading: boolean = false
   @State hmHeight: string = "90%";
   @State type_id: string = ""
   @State isLoad: boolean = false
   @State isPull: boolean = false
+  @State isNoBom: boolean = false
 
   async aboutToAppear() {
     const hr = await hmRect()
@@ -28,15 +29,17 @@ struct Wallpaper {
   onPageShow() {
     let params: ParamsInter = router.getParams();
     this.type_id = params.id
-    this.getWallpaper()
+    this.getWallpaper(true)
   }
   // 壁纸
-  async getWallpaper() {
+  async getWallpaper(flag = false) {
     try {
-      this.loading = true
+      if (flag) {
+        this.loading = true
+      }
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api, { type_id: !this.type_id || "" })
-      this.loading = false
+      this.loading = this.isLoad = false
       if (res.code === 200) {
         this.page.count = res.data.count
         const rows = setBgColor(res.data.rows)
@@ -45,7 +48,7 @@ struct Wallpaper {
         toast.error(res.msg)
       }
     } catch (err) {
-      this.loading = false
+      this.loading = this.isLoad = false
       toast.error()
     }
   }
@@ -93,6 +96,9 @@ struct Wallpaper {
               Text("加载中...").fontSize(13)
             }.height(50).width("100%")
           }
+          if (this.isNoBom) {
+            Text("到底了~").fontSize(13).lineHeight(50).textAlign(TextAlign.Center)
+          }
         }
       }
       .height(this.hmHeight)
@@ -100,17 +106,26 @@ struct Wallpaper {
       .edgeEffect(EdgeEffect.Spring)
       .onScrollEdge((side: Edge) => {
         if (Edge.Top === side) {
-          this.isPull = true
-          this.list = []
-          this.page.offset = 1
-          this.getWallpaper()
+          // this.isPull = true
+          // this.list = []
+          // this.page.offset = 1
+          // this.getWallpaper()
         }
         if (Edge.Bottom === side) {
+
+          if (this.list.length === this.page.count) {
+            this.isLoad = false
+            this.isNoBom = true
+            return
+          }
+          if(this.isLoad){
+            return
+          }
           this.isLoad = true
-          setTimeout(()=>{
+          setTimeout(() => {
             this.page.offset++
             this.getWallpaper()
-          },1500)
+          }, 1500)
         }
       })
 
