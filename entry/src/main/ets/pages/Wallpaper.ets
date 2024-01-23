@@ -17,9 +17,10 @@ struct Wallpaper {
   @State loading: boolean = false
   @State hmHeight: string = "90%";
   @State type_id: string = ""
-  @State isLoad: boolean = false
-  @State isPull: boolean = false
-  @State isNoBom: boolean = false
+  @State isLoad: boolean = false // 触底分页加载状态
+  @State isPull: boolean = false // 下拉刷新状态
+  @State isNoBom: boolean = false // 到底了没数据了状态
+  @State y: number = 0
 
   async aboutToAppear() {
     const hr = await hmRect()
@@ -43,24 +44,35 @@ struct Wallpaper {
       if (res.code === 200) {
         this.page.count = res.data.count
         const rows = setBgColor(res.data.rows)
+        if (this.isPull) {
+          this.list = rows
+        }
         this.list = [...this.list, ...rows]
+        this.isPull = false
       } else {
+        this.isPull = false
         toast.error(res.msg)
       }
     } catch (err) {
-      this.loading = this.isLoad = false
+      this.loading = this.isLoad = this.isPull = false
       toast.error()
     }
   }
 
   build() {
     Column() {
-      TopNav({ title: "壁纸中心", url: "pages/Index" })
+      TopNav({ title: "壁纸中心" + this.y, url: "pages/Index" })
       if (this.page.count === 0) {
         NoData({ type: "page", state: 0, })
       }
       Scroll(this.scroller) {
         Column() {
+          // if (this.isPull) {
+          Text("刷新中...")
+            .fontSize(13)
+            .lineHeight(50)
+            .textAlign(TextAlign.Center)
+          // }
           Grid() {
             ForEach(this.list, (item: WallItemInter, idx: number) => {
               GridItem() {
@@ -104,12 +116,20 @@ struct Wallpaper {
       .height(this.hmHeight)
       .width("100%")
       .edgeEffect(EdgeEffect.Spring)
+      .onScroll((x: number, y: number) => {
+        this.y = this.scroller.currentOffset().yOffset
+        console.log("XXXXX", x, "YYYYYYY:", y)
+      })
       .onScrollEdge((side: Edge) => {
         if (Edge.Top === side) {
+          // if (this.isPull) {
+          //   return
+          // }
           // this.isPull = true
-          // this.list = []
-          // this.page.offset = 1
-          // this.getWallpaper()
+          // setTimeout(() => {
+          //   this.page.offset = 1
+          //   this.getWallpaper()
+          // }, 2000)
         }
         if (Edge.Bottom === side) {
 
@@ -118,7 +138,7 @@ struct Wallpaper {
             this.isNoBom = true
             return
           }
-          if(this.isLoad){
+          if (this.isLoad) {
             return
           }
           this.isLoad = true
@@ -128,6 +148,7 @@ struct Wallpaper {
           }, 1500)
         }
       })
+
 
       if (this.loading) {
         Loading()
