@@ -20,7 +20,8 @@ struct Wallpaper {
   @State isLoad: boolean = false // 触底分页加载状态
   @State isPull: boolean = false // 下拉刷新状态
   @State isNoBom: boolean = false // 到底了没数据了状态
-  @State y: number = 0
+  @State hei: number = 25
+  @State pull_text: string = "松开刷新"
 
   async aboutToAppear() {
     const hr = await hmRect()
@@ -46,9 +47,10 @@ struct Wallpaper {
         const rows = setBgColor(res.data.rows)
         if (this.isPull) {
           this.list = rows
+          this.isPull = false
+          return
         }
         this.list = [...this.list, ...rows]
-        this.isPull = false
       } else {
         this.isPull = false
         toast.error(res.msg)
@@ -61,18 +63,24 @@ struct Wallpaper {
 
   build() {
     Column() {
-      TopNav({ title: "壁纸中心" + this.y, url: "pages/Index" })
+      TopNav({ title: "壁纸中心" + this.list.length, url: "pages/Index" })
       if (this.page.count === 0) {
         NoData({ type: "page", state: 0, })
       }
+      if (this.isPull) {
+        Column() {
+          Column() {
+          }.width(25).height(this.hei).border({ width: 1, color: 0x000000, radius: 25 }).margin({ bottom: 10 })
+
+          Text(this.pull_text)
+            .fontSize(13)
+            .textAlign(TextAlign.Center)
+        }.margin({ top: 10, bottom: 10 })
+
+      }
       Scroll(this.scroller) {
         Column() {
-          // if (this.isPull) {
-          Text("刷新中...")
-            .fontSize(13)
-            .lineHeight(50)
-            .textAlign(TextAlign.Center)
-          // }
+
           Grid() {
             ForEach(this.list, (item: WallItemInter, idx: number) => {
               GridItem() {
@@ -116,20 +124,33 @@ struct Wallpaper {
       .height(this.hmHeight)
       .width("100%")
       .edgeEffect(EdgeEffect.Spring)
-      .onScroll((x: number, y: number) => {
-        this.y = this.scroller.currentOffset().yOffset
-        console.log("XXXXX", x, "YYYYYYY:", y)
+      .onScroll((x,y1) => {
+        let y = this.scroller.currentOffset().yOffset
+        if (y > 0) {
+          return
+        }
+        this.pull_text = "松开刷新"
+        const scroll_y = Math.floor(Math.abs(y))
+        console.log("----------",y,scroll_y,y1)
+
+        if (scroll_y > 24) {
+          this.isPull = true
+          this.hei = scroll_y
+        }
+        let state = false
+        if(scroll_y === 1){
+          state = true
+        }
+        if (state) {
+          this.pull_text = "刷新中"
+          this.page.offset = 1
+          console.log("********",scroll_y)
+          this.getWallpaper()
+        }
       })
       .onScrollEdge((side: Edge) => {
         if (Edge.Top === side) {
-          // if (this.isPull) {
-          //   return
-          // }
-          // this.isPull = true
-          // setTimeout(() => {
-          //   this.page.offset = 1
-          //   this.getWallpaper()
-          // }, 2000)
+
         }
         if (Edge.Bottom === side) {
 
