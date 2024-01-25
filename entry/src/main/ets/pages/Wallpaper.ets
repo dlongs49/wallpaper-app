@@ -36,6 +36,7 @@ struct Wallpaper {
   // 壁纸
   async getWallpaper(flag = false) {
     try {
+      // 第一次进入页面的 loading 加载
       if (flag) {
         this.loading = true
       }
@@ -44,10 +45,13 @@ struct Wallpaper {
       this.loading = this.isLoad = false
       if (res.code === 200) {
         this.page.count = res.data.count
+        // 给图片增加背景交互色
         const rows = setBgColor(res.data.rows)
+        // 此处为下拉刷新
         if (this.isPull) {
           this.list = rows
           this.isPull = false
+          this.pull_text = "松开刷新"
           return
         }
         this.list = [...this.list, ...rows]
@@ -63,7 +67,7 @@ struct Wallpaper {
 
   build() {
     Column() {
-      TopNav({ title: "壁纸中心" + this.list.length, url: "pages/Index" })
+      TopNav({ title: "壁纸中心", url: "pages/Index" })
       if (this.page.count === 0) {
         NoData({ type: "page", state: 0, })
       }
@@ -124,27 +128,28 @@ struct Wallpaper {
       .height(this.hmHeight)
       .width("100%")
       .edgeEffect(EdgeEffect.Spring)
-      .onScroll((x,y1) => {
+      .onScroll(() => {
         let y = this.scroller.currentOffset().yOffset
+        // y 为 负数则为下拉刷新 为正为上拉加载
         if (y > 0) {
           return
         }
         this.pull_text = "松开刷新"
         const scroll_y = Math.floor(Math.abs(y))
-        console.log("----------",y,scroll_y,y1)
-
+        if (scroll_y === 0) {
+          this.pull_text = "刷新中"
+        }
+        // 保持加载的圆形有高度
         if (scroll_y > 24) {
           this.isPull = true
           this.hei = scroll_y
         }
-        let state = false
-        if(scroll_y === 1){
-          state = true
-        }
-        if (state) {
+      })
+      .onScrollStop(() => {
+        // 滚动条停止滚动 判断是刷新操作，避免上拉加载执行
+        if (this.isPull) {
           this.pull_text = "刷新中"
           this.page.offset = 1
-          console.log("********",scroll_y)
           this.getWallpaper()
         }
       })
@@ -152,25 +157,24 @@ struct Wallpaper {
         if (Edge.Top === side) {
 
         }
+        // 上拉分页加载
         if (Edge.Bottom === side) {
-
+          // 分页加载的长度等于总数则不往下执行
           if (this.list.length === this.page.count) {
             this.isLoad = false
             this.isNoBom = true
             return
           }
+          // 如果当前上拉分页loading状态还未完成，不让其往下 执行
           if (this.isLoad) {
             return
           }
+          // 分页加一 执行分页加载
           this.isLoad = true
-          setTimeout(() => {
-            this.page.offset++
-            this.getWallpaper()
-          }, 1500)
+          this.page.offset++
+          this.getWallpaper()
         }
       })
-
-
       if (this.loading) {
         Loading()
       }
