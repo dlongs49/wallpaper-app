@@ -5,6 +5,7 @@ import { PageInter, ParamsInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
 import Loading from '../component/Loading'
 import NoData from '../component/NoData'
+import {PullUp,PullDown,InEnd} from '../component/ToLoad'
 import { toast } from '../component/ShowToast'
 import { hmRect, setBgColor } from '../utils/tools'
 
@@ -19,7 +20,7 @@ struct Wallpaper {
   @State type_id: string = ""
   @State isLoad: boolean = false // 触底分页加载状态
   @State isPull: boolean = false // 下拉刷新状态
-  @State isNoBom: boolean = false // 到底了没数据了状态
+  @State isEnd: boolean = false // 到底了没数据了状态
   @State hei: number = 25
   @State pull_text: string = "松开刷新"
 
@@ -72,15 +73,7 @@ struct Wallpaper {
         NoData({ type: "page", state: 0, })
       }
       if (this.isPull) {
-        Column() {
-          Column() {
-          }.width(25).height(this.hei).border({ width: 1, color: 0x000000, radius: 25 }).margin({ bottom: 10 })
-
-          Text(this.pull_text)
-            .fontSize(13)
-            .textAlign(TextAlign.Center)
-        }.margin({ top: 10, bottom: 10 })
-
+        PullDown({hei:this.hei,pull_text:this.pull_text})
       }
       Scroll(this.scroller) {
         Column() {
@@ -115,13 +108,10 @@ struct Wallpaper {
           .width("90%")
 
           if (this.isLoad) {
-            Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
-              Image($r("app.media.loading")).width(40).height(40)
-              Text("加载中...").fontSize(13)
-            }.height(50).width("100%")
+            PullUp()
           }
-          if (this.isNoBom) {
-            Text("到底了~").fontSize(13).lineHeight(50).textAlign(TextAlign.Center)
+          if (this.isEnd) {
+            InEnd()
           }
         }
       }
@@ -162,7 +152,7 @@ struct Wallpaper {
           // 分页加载的长度等于总数则不往下执行
           if (this.list.length === this.page.count) {
             this.isLoad = false
-            this.isNoBom = true
+            this.isEnd = true
             return
           }
           // 如果当前上拉分页loading状态还未完成，不让其往下 执行
