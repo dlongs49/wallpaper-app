@@ -77,7 +77,6 @@ struct Wallpaper {
       }
       Scroll(this.scroller) {
         Column() {
-
           Grid() {
             ForEach(this.list, (item: WallItemInter, idx: number) => {
               GridItem() {

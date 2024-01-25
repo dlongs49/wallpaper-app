@@ -45,5 +45,6 @@ export interface CollectWallInter{
   wallpaper_url:string,
   create_time:string,
   is_checked:boolean,
-  color:number
+  color:number,
+  format_date:string,
 }
