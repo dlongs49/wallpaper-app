@@ -42,7 +42,7 @@ struct Wallpaper {
         this.loading = true
       }
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
-      const res: any = await request.post(api, { type_id: !this.type_id || "" })
+      const res: any = await request.post(api, { type_id: this.type_id || "" })
       this.loading = this.isLoad = false
       if (res.code === 200) {
         this.page.count = res.data.count
@@ -105,14 +105,13 @@ struct Wallpaper {
           .rowsGap(10)
           .layoutDirection(GridDirection.Row)
           .width("90%")
-
           if (this.isLoad) {
             PullUp()
           }
           if (this.isEnd) {
             InEnd()
           }
-        }
+        }.constraintSize({minHeight:this.hmHeight})
       }
       .height(this.hmHeight)
       .width("100%")
@@ -143,9 +142,6 @@ struct Wallpaper {
         }
       })
       .onScrollEdge((side: Edge) => {
-        if (Edge.Top === side) {
-
-        }
         // 上拉分页加载
         if (Edge.Bottom === side) {
           // 分页加载的长度等于总数则不往下执行
