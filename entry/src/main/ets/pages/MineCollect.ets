@@ -27,34 +27,15 @@ struct MineCollect {
   @State isEnd: boolean = false // 到底了没数据了状态
   @State hei: number = 25
   @State pull_text: string = "松开刷新"
+
   async aboutToAppear() {
     const hr = await hmRect()
     this.hmHeight = hr.hmHeight
-    this.watchNetWork()
-
   }
 
   onPageShow() {
     this.loading = true
     this.getWallpaper(true)
-    var innerEvent = { eventId: 10000 }
-    emitter.on(innerEvent, this.onEventHandel.bind(this))
-  }
-
-  watchNetWork() {
-    observer.on('networkStateChange', data => {
-      console.log("监听网络状态：" + JSON.stringify(data));
-    });
-    let netCon: connection.NetConnection = connection.createNetConnection();
-    netCon.register((error) => {
-      console.log("44444", JSON.stringify(error));
-    });
-    netCon.on('netAvailable', (data: connection.NetHandle) => {
-      console.log("**********************", JSON.stringify(data));
-    })
-  }
-
-  onEventHandel() {
   }
   // 我的收藏壁纸
   async getWallpaper(flag = false) {
@@ -108,10 +89,8 @@ struct MineCollect {
       toast.error()
     }
   }
-
   build() {
     Column() {
-
       TopNav({ title: "我的收藏", url: "pages/Index" })
       if (this.page.count === 0) {
         NoData({ type: "page", state: 0, })
@@ -120,7 +99,7 @@ struct MineCollect {
         PullDown({hei:this.hei,pull_text:this.pull_text})
       }
       Scroll(this.scroller) {
-        Column(){
+        Column() {
           Grid() {
             ForEach(this.list, (item: CollectWallInter, idx: number) => {
               GridItem() {
@@ -172,29 +151,30 @@ struct MineCollect {
                     }
                   })
                 })
-              }.width("33%").margin({ bottom: 18 })
+              }.width("30%").margin({ bottom: 18 })
             }, item => item)
           }
-          .columnsTemplate("1fr 1fr 1fr")
+          .columnsTemplate("lfr lfr lfr")
           .columnsGap(12)
           .rowsGap(10)
           .layoutDirection(GridDirection.Row)
           .width("90%")
+
           if (this.isLoad) {
             PullUp()
           }
           if (this.isEnd) {
             InEnd()
           }
-        }.backgroundColor(0xf00f00)
+        }
       }
       .height(!this.show ? this.hmHeight - 300 + 'px' : (this.hmHeight - 570) + 'px')
       .width("100%")
-      .edgeEffect(EdgeEffect.Spring).backgroundColor(0xf4f4f4)
+      .edgeEffect(EdgeEffect.Spring)
       .onScroll(() => {
         let y = this.scroller.currentOffset().yOffset
-        // y 为 负数则为下拉刷新 为正为上拉加载
-        if (y > 0) {
+        // y 为 负数则为下拉刷新 为正为上拉加载 || 正在删除选中状态，不执行分页加载
+        if (y > 0 || this.show) {
           return
         }
         this.pull_text = "松开刷新"
@@ -209,6 +189,10 @@ struct MineCollect {
         }
       })
       .onScrollStop(() => {
+        // 正在删除选中状态，不执行分页加载
+        if(this.show){
+          return
+        }
         // 滚动条停止滚动 判断是刷新操作，避免上拉加载执行
         if (this.isPull) {
           this.pull_text = "刷新中"
@@ -217,8 +201,9 @@ struct MineCollect {
         }
       })
       .onScrollEdge((side: Edge) => {
-        if (Edge.Top === side) {
-
+        // 正在删除选中状态，不执行分页加载
+        if(this.show){
+          return
         }
         // 上拉分页加载
         if (Edge.Bottom === side) {
@@ -238,22 +223,21 @@ struct MineCollect {
           this.getWallpaper()
         }
       })
+      Flex({ justifyContent: FlexAlign.Center }) {
+        Column() {
+          Image($r('app.media.delete')).width(20).height(20)
+          Text("删除").fontSize(12).margin({ top: 5 })
+        }
+        .width("100%")
+        .width(40)
+        .margin({ top: 15 })
+        .onClick(() => {
+          this.handleDelete()
 
-      // Flex({ justifyContent: FlexAlign.Center }) {
-      //   Column() {
-      //     Image($r('app.media.delete')).width(20).height(20)
-      //     Text("删除").fontSize(12).margin({ top: 5 })
-      //   }
-      //   .width("100%")
-      //   .width(40)
-      //   .margin({ top: 15 })
-      //   .onClick(() => {
-      //     this.handleDelete()
-      //
-      //   })
-      // }.backgroundColor(0xf5f5f5).height("270px").translate({ y: this.y }).animation({
-      //   duration: 200,
-      // })
+        })
+      }.backgroundColor(0xf5f5f5).height("270px").translate({ y: this.y }).animation({
+        duration: 200,
+      })
 
       if (this.loading) {
         Loading()
