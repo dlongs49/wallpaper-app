@@ -51,8 +51,11 @@ struct MineCollect {
         this.page.count = res.data.count
         const rows = setBgColor(res.data.rows)
         // 此处为下拉刷新
-        if (this.isPull) {
-          this.list = rows
+        if (this.isPull || flag) {
+          this.list = []
+          setTimeout(()=>{
+            this.list = rows
+          },100)
           this.isPull = false
           this.pull_text = "松开刷新"
           return
@@ -78,9 +81,10 @@ struct MineCollect {
       const res: any = await request.post("/api/sign/app/del_collect_wallpaper", ids)
       this.loading = false
       if (res.code === 200) {
-        this.list = this.list.filter(x =>!x.is_checked)
         this.show = false
         this.y = 0
+        this.page.offset = 1
+        this.getWallpaper(true)
       } else {
         toast.error(res.msg)
       }
@@ -140,7 +144,6 @@ struct MineCollect {
                         }
                       })
                       .onActionEnd(() => {
-                        console.log("145")
                       })
                   )
                 }.width("100%").alignItems(HorizontalAlign.End).onClick((e: ClickEvent) => {
