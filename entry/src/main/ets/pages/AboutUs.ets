@@ -25,10 +25,10 @@ struct AboutUs {
         justifyContent: FlexAlign.Center,
         alignItems: ItemAlign.Center
       }) {
-        Image("")
+        Image($r("app.media.icon"))
           .width(70)
           .height(70)
-          .borderRadius(6)
+          .borderRadius(10)
           .backgroundColor(0xe7e7e7)
         Text('壁纸小屋')
           .fontSize(16)
