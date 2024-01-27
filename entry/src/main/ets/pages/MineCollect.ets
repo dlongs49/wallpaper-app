@@ -166,7 +166,7 @@ struct MineCollect {
           if (this.isEnd) {
             InEnd()
           }
-        }
+        }.constraintSize({minHeight:this.hmHeight+ 'px'})
       }
       .height(!this.show ? this.hmHeight - 300 + 'px' : (this.hmHeight - 570) + 'px')
       .width("100%")
