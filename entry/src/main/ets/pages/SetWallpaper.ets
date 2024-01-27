@@ -1,10 +1,9 @@
 import router from '@ohos.router'
-import prompt from '@ohos.prompt'
 import request from '../utils/http'
 import { ParamsInter, PageInter, WallItemInter } from '../interface/index'
-import { ListData } from "../utils/data_source"
 import { base_url } from '../utils/env'
-import storage from '../utils/storage'
+import { getRandomColor } from "../utils/tools"
+import { toast } from '../component/ShowToast'
 
 
 @CustomDialog
@@ -50,35 +49,14 @@ struct CustomDialogComm {
 @Entry
 @Component
 struct SetWallpaper {
+  scroller: SwiperController = new SwiperController()
   @State page: PageInter = { offset: 1, limit: 2, count: 0 }
-  @State list: any = new ListData([
-    {
-      "id": "5e0f686b-2053-458e-8f41-6cf03ae4f506",
-      "type_id": "f3ae2967-391a-4a61-aa92-5f6bd69d9931",
-      "type_name": "风景",
-      "title": "尽头",
-      "url": "/upload/wallpaper/2024-01-11/20121247-8c3a-4845-97de-c01d6e4cc680.jpg",
-      "url_type": 0,
-      "is_like": 0,
-      "create_time": "2024-01-11T15:02:44.000Z"
-    },
-    {
-      "id": "2630aaa2-f30c-43ff-9ea2-ed17ee34ac71",
-      "type_id": "a08de8f4-c41d-4a05-9fa7-05b9edc50ff0",
-      "type_name": "艺术",
-      "title": "手机连接",
-      "url": "/upload/wallpaper/2024-01-11/1a4568f9-2939-4c1b-b42a-a1ec742cd340.jpg",
-      "url_type": 0,
-      "is_like": 0,
-      "create_time": "2024-01-11T15:04:03.000Z"
-    }
-  ])
+  @State list: any = []
   @State currentItem: any = {}
 
   aboutToAppear() {
-    this.currentItem = this.list.getData(0)
     let params: ParamsInter = router.getParams();
-    // this.getWallpaperDetail(params.id)
+    this.getWallpaperDetail(params.id)
     // this.getWallpaper()
   }
   // 当前壁纸
@@ -89,18 +67,10 @@ struct SetWallpaper {
       if (res.code === 200) {
         this.list = [res.data]
       } else {
-        prompt.showToast({
-          message: res.msg,
-          bottom: 400,
-          duration: 2000,
-        });
+        toast.error(res.msg)
       }
     } catch (err) {
-      prompt.showToast({
-        message: "服务出现异常!",
-        bottom: 400,
-        duration: 2000,
-      });
+      toast.error()
     }
   }
   // 壁纸列表
@@ -112,18 +82,10 @@ struct SetWallpaper {
         this.page.count = res.data.count
         this.list = [...this.list, ...res.data.rows]
       } else {
-        prompt.showToast({
-          message: res.msg,
-          bottom: 400,
-          duration: 2000,
-        });
+        toast.error(res.msg)
       }
     } catch (err) {
-      prompt.showToast({
-        message: "服务出现异常!",
-        bottom: 400,
-        duration: 2000,
-      });
+      toast.error()
     }
   }
   // 收藏
@@ -132,25 +94,11 @@ struct SetWallpaper {
       const res: any = await request.post(`/api/sign/app/collect_wallpaper?wallpaper_id=${this.currentItem.id}`)
       if (res.code === 200) {
         this.currentItem.is_like = this.currentItem.is_like == 0 ? 1 : 0
-        prompt.showToast({
-          message: res.data,
-          bottom: 400,
-          duration: 2000,
-        });
-      } else {
-        prompt.showToast({
-          message: res.msg,
-          bottom: 400,
-          duration: 2000,
-        });
+        toast.error(res.msg)
       }
 
     } catch (err) {
-      prompt.showToast({
-        message: "服务出现异常!",
-        bottom: 400,
-        duration: 2000,
-      });
+      toast.error()
     }
   }
 
@@ -254,16 +202,23 @@ struct SetWallpaper {
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
-      Swiper() {
-        LazyForEach(this.list, (item: WallItemInter) => {
-          Image(item.url_type == 0 ? base_url + item.url : item.url)
-            .width("100%")
-            .height("100%")
-            .backgroundColor('0xffeeeeee')
-        }, item => item)
-      }.indicator(false).onChange((i: number) => {
-        this.currentItem = this.list[i];
-      })
+      if (this.list.length > 0) {
+        Swiper(this.scroller) {
+          ForEach(this.list, (item: WallItemInter) => {
+            Image(item.url_type == 0 ? base_url + item.url : item.url)
+              .width("100%")
+              .height("100%")
+              .backgroundColor(getRandomColor())
+          }, item => item)
+        }
+        .width("100%")
+        .height("100%")
+        .indicator(false)
+        .backgroundColor(getRandomColor())
+        .onChange((i: number) => {
+          // this.currentItem = this.list[i];
+        })
+      }
 
 
       Flex({ alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {

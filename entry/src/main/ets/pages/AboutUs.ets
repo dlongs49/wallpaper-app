@@ -1,14 +1,33 @@
+import common from '@ohos.app.ability.common';
 import TopNav from '../component/TopNav';
+import { touchBgColor } from '../utils/tools';
 
 @Entry
 @Component
 struct AboutUs {
   @State cardList: any = [
-    {title:"github",url:"https://github.com/dlongs49"},
-    {title:"gitee",url:"https://gitee.com/dlongs49"},
+    { title: "github", url: "https://github.com/dlongs49" },
+    { title: "gitee", url: "https://gitee.com/dlongs49" },
   ]
+  @State touchBgColor: number[] = [Color.Transparent, Color.Transparent, Color.Transparent]
 
   onPageShow() {
+  }
+
+  async toUrl(url) {
+    try {
+      let want = {
+        "action": "android.intent.action.VIEW",
+        "entities": ["entity.system.browsable"],
+        "uri": url,
+        "type": "text/plain"
+      }
+      let context = getContext(this) as common.UIAbilityContext;
+      await context.startAbility(want)
+      console.info(`URL成功`)
+    } catch (error) {
+      console.info(`URI异常： ${JSON.stringify(error)}`)
+    }
   }
 
   build() {
@@ -33,18 +52,25 @@ struct AboutUs {
       }.margin({ top: 50 }).height(120)
 
       List() {
-        ForEach(this.cardList, (item) => {
+        ForEach(this.cardList, (item: any, i: number) => {
           ListItem() {
             Flex({ justifyContent: FlexAlign.SpaceBetween }) {
               Text(`${item.title}`).fontSize(14).margin({ left: 14 })
               Image($r("app.media.arrow")).width(20).height(20)
-            }
-          }.margin({ bottom: 30 }).onClick(() => {
-
+            }.width("90%")
+          }
+          .width("100%")
+          .height(65)
+          .backgroundColor(this.touchBgColor[i])
+          .onTouch((event) => {
+            this.touchBgColor[i] = touchBgColor(event) === 0xffffff ? Color.Transparent : touchBgColor(event)
+          })
+          .onClick(() => {
+            this.toUrl(item.url)
           })
         })
 
-      }.width("90%").margin({ top: 50 })
+      }.width("100%").margin({ top: 40 })
     }.justifyContent(FlexAlign.Start).height("100%").width("100%")
   }
 }

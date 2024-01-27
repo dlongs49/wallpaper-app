@@ -20,4 +20,7 @@ export class ListData implements IDataSource {
 
   unregisterDataChangeListener() {
   }
+  public pushData(data: any): void {
+    this.list.push(data);
+  }
 }
