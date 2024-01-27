@@ -1,9 +1,3 @@
-import AppContext from '@ohos.app.ability.common';
-import wallpaper from '@ohos.wallpaper';
-import prompt from '@ohos.prompt'
-import request from '../utils/http'
-import { base_url } from '../utils/env'
-import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav';
 
 @Entry
