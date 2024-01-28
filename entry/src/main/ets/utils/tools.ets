@@ -1,4 +1,5 @@
 import window from '@ohos.window'
+import connection from '@ohos.net.connection';
 
 export const hmRect = async () => {
   let win = await window.getLastWindow(getContext(this))
@@ -30,4 +31,21 @@ export const touchBgColor = (event: any) => {
 export const getRandomColor = () => {
   const i = Math.round(Math.random() * colorList.length - 1)
   return colorList[i]
+}
+
+
+// 监听网络状态
+export const connectNet = ():Promise<number> => {
+  let netCon: connection.NetConnection = connection.createNetConnection();
+  return new Promise((resolve, reject) => {
+    // 模拟器调试不起作用，真机正常
+    netCon.register((error) => {
+      console.log("监听网络状态异常：", JSON.stringify(error))
+      resolve(-1)
+    })
+    netCon.on('netAvailable', (data: connection.NetHandle) => {
+      resolve(0)
+    })
+  })
+
 }
