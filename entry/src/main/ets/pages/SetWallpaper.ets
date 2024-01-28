@@ -1,9 +1,10 @@
 import router from '@ohos.router'
 import request from '../utils/http'
-import { ParamsInter} from '../interface/index'
+import { ParamsInter } from '../interface/index'
 import { base_url } from '../utils/env'
 import { getRandomColor } from "../utils/tools"
 import { toast } from '../component/ShowToast'
+import Loading from '../component/Loading'
 
 
 @CustomDialog
@@ -49,7 +50,8 @@ struct CustomDialogComm {
 @Entry
 @Component
 struct SetWallpaper {
-  @State currentItem: any = {}
+  @State currentItem: any = { is_like: 0 }
+  @State loading: boolean = false
 
   aboutToAppear() {
     let params: ParamsInter = router.getParams();
@@ -58,6 +60,7 @@ struct SetWallpaper {
   // 当前壁纸
   async getWallpaperDetail(id: string) {
     try {
+      this.loading = true
       let api = `/api/wallpaper/app/detail_wallpaper/${id}`
       const res: any = await request.get(api)
       if (res.code === 200) {
@@ -187,6 +190,10 @@ struct SetWallpaper {
         .width("100%")
         .height("100%")
         .backgroundColor(getRandomColor())
+        .onComplete(() => {
+          this.loading = false
+        })
+
       Flex({ alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
         Image($r("app.media.close")).width("70px").height("70px")
       }
@@ -199,7 +206,6 @@ struct SetWallpaper {
       .onClick(() => {
         router.back({ url: 'pages/Index' });
       })
-
       Row() {
         Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
           Image(this.currentItem.is_like === 0 ? $r("app.media.love_white") : $r("app.media.love_red"))
@@ -220,6 +226,10 @@ struct SetWallpaper {
             }
           })
       }.position({ y: "92%", x: '5%' }).width("90%")
+
+      if (this.loading) {
+        Loading()
+      }
     }.height("100%").width("100%")
   }
 }
