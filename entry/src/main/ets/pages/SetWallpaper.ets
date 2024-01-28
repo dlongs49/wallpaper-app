@@ -1,10 +1,12 @@
 import router from '@ohos.router'
+import use_request from '@ohos.request';
 import request from '../utils/http'
 import { ParamsInter } from '../interface/index'
 import { base_url } from '../utils/env'
 import { getRandomColor } from "../utils/tools"
 import { toast } from '../component/ShowToast'
 import Loading from '../component/Loading'
+import wallpaper from '@ohos.wallpaper';
 
 
 @CustomDialog
@@ -97,91 +99,87 @@ struct SetWallpaper {
     autoCancel: true,
     customStyle: true
   })
-
+  // 锁屏
   onLock() {
-    console.log("应用锁屏")
-    // let downloadTask
-    // try {
-    //   request.downloadFile(getContext(this), {
-    //     url: "http://192.168.2.102:800/s.jpg",
-    //     // filePath: "/data/storage/el2/base/haps/entry/files/s.jpg",
-    //     filePath: `${getContext(this).filesDir}/s.jpg`,
-    //     networkType: request.NETWORK_WIFI,
-    //     background: true
-    //   }, (err, data) => {
-    //     if (err) {
-    //       console.error("下载错误", JSON.stringify(err))
-    //       return
-    //     }
-    //     downloadTask = data
-    //     let progresCallback = (receivedSize, totalSize) => {
-    //       console.info("进度:" + receivedSize + " totalSize:" + totalSize);
-    //     };
-    //     downloadTask.on('progress', progresCallback);
-    //     let failCallback = (err) => {
-    //       console.info('监听下载失败:' + err);
-    //
-    //     };
-    //     downloadTask.on('fail', failCallback);
-    //     let completeCallback = () => {
-    //       console.info('下载完成');
-    //       let filePath = getContext(this).filesDir + "/s.jpg";
-    //       wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
-    //         if (error) {
-    //           console.error(`错误: ${JSON.stringify(error)}`);
-    //           return;
-    //         }
-    //         console.log(`成功`);
-    //       });
-    //       fs.access(filePath).then((res) => {
-    //         if (res) {
-    //           console.info("file exists",res);
-    //         }else{
-    //           console.log("读取",res)
-    //         }
-    //       }).catch((err) => {
-    //         console.info("access failed with error message: " + err.message + ", error code: " + err.code);
-    //       });
-    //     };
-    //     downloadTask.on('complete', completeCallback);
-    //     let pauseCallback = () => {
-    //       console.info('下载暂停');
-    //       downloadTask.delete((err, result) => {
-    //         if (err) {
-    //           console.error('Failed to remove the download task.');
-    //           return;
-    //         }
-    //         if (result) {
-    //           console.info('Download task removed.');
-    //         } else {
-    //           console.error('Failed to remove the download task.');
-    //         }
-    //       });
-    //     };
-    //     downloadTask.on('pause', pauseCallback);
-    //     let removeCallback = () => {
-    //       console.info('下载移除');
-    //     };
-    //     downloadTask.on('remove', removeCallback);
-    //     downloadTask.getTaskInfo((err, downloadInfo) => {
-    //       if (err) {
-    //         console.error('Failed to query the download mimeType. Cause:' + JSON.stringify(err));
-    //       } else {
-    //         console.info('下载信息:' + JSON.stringify(downloadInfo));
-    //       }
-    //     });
-    //   })
-    // } catch (err) {
-    //   console.error('错误码 : ' + err.code + ', 错误信息 : ' + err.message);
-    // }
+    this.setWallpaperApplication(1)
   }
-
+  // 主屏幕
   onDesktop() {
-    console.log("应用桌面")
+    this.setWallpaperApplication(0)
   }
-
+ // 全部
   onAll() {
-    console.log("应用全部")
+    this.setWallpaperApplication(2)
+  }
+  // 设置壁纸
+  async setWallpaperApplication(type) {
+    try {
+      let file_name = this.currentItem.url.slice(this.currentItem.url.lastIndexOf('/'), this.currentItem.url.length)
+      let filePath = getContext(this).filesDir + file_name
+      let downloadTask = await use_request.downloadFile(getContext(this), {
+        url: this.currentItem.url_type == 0 ? base_url + this.currentItem.url : this.currentItem.url,
+        filePath,
+      })
+      let progresCallback = (receivedSize, totalSize) => {
+        console.info("下载壁纸进度:" + receivedSize + " totalSize:" + totalSize);
+      };
+      downloadTask.on('progress', progresCallback);
+      let failCallback = (err) => {
+        console.info('下载壁纸失败:', JSON.stringify(err));
+
+      };
+      downloadTask.on('fail', failCallback);
+      let completeCallback = () => {
+        if(type === 0){
+          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
+            if (error) {
+              console.error(`设置主屏壁纸错误: ${JSON.stringify(error)}`);
+              return;
+            }
+            console.log("设置主屏壁纸成功");
+          });
+        }
+        if(type === 1){
+          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN, (error) => {
+            if (error) {
+              console.error(`设置锁屏壁纸错误: ${JSON.stringify(error)}`);
+              return;
+            }
+            console.log("设置锁屏壁纸成功");
+          });
+        }
+        if(type === 2){
+          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
+            if (error) {
+              console.error(`设置主屏壁纸错误: ${JSON.stringify(error)}`);
+              return;
+            }
+            console.log("设置主屏壁纸成功");
+          });
+          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN, (error) => {
+            if (error) {
+              console.error(`设置锁屏壁纸错误: ${JSON.stringify(error)}`);
+              return;
+            }
+            console.log("设置锁屏壁纸成功");
+          });
+        }
+      };
+      downloadTask.on('complete', completeCallback);
+      let pauseCallback = () => {
+        console.info('下载壁纸暂停');
+      };
+      downloadTask.on('pause', pauseCallback);
+      downloadTask.getTaskInfo((err, downloadInfo) => {
+        if (err) {
+          console.error('下载信息[error]:', JSON.stringify(err));
+        } else {
+          console.info('下载信息[info]:', JSON.stringify(downloadInfo));
+        }
+      });
+    } catch (err) {
+      console.error("downloadTask异常：", JSON.stringify(err));
+    }
   }
 
   build() {
@@ -206,6 +204,7 @@ struct SetWallpaper {
       .onClick(() => {
         router.back({ url: 'pages/Index' });
       })
+
       Row() {
         Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
           Image(this.currentItem.is_like === 0 ? $r("app.media.love_white") : $r("app.media.love_red"))
