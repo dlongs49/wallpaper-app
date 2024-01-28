@@ -1,6 +1,6 @@
 import router from '@ohos.router'
 import request from '../utils/http'
-import { ParamsInter, PageInter, WallItemInter } from '../interface/index'
+import { ParamsInter} from '../interface/index'
 import { base_url } from '../utils/env'
 import { getRandomColor } from "../utils/tools"
 import { toast } from '../component/ShowToast'
@@ -49,15 +49,11 @@ struct CustomDialogComm {
 @Entry
 @Component
 struct SetWallpaper {
-  scroller: SwiperController = new SwiperController()
-  @State page: PageInter = { offset: 1, limit: 2, count: 0 }
-  @State list: any = []
   @State currentItem: any = {}
 
   aboutToAppear() {
     let params: ParamsInter = router.getParams();
     this.getWallpaperDetail(params.id)
-    // this.getWallpaper()
   }
   // 当前壁纸
   async getWallpaperDetail(id: string) {
@@ -65,22 +61,7 @@ struct SetWallpaper {
       let api = `/api/wallpaper/app/detail_wallpaper/${id}`
       const res: any = await request.get(api)
       if (res.code === 200) {
-        this.list = [res.data]
-      } else {
-        toast.error(res.msg)
-      }
-    } catch (err) {
-      toast.error()
-    }
-  }
-  // 壁纸列表
-  async getWallpaper() {
-    try {
-      let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
-      const res: any = await request.post(api)
-      if (res.code === 200) {
-        this.page.count = res.data.count
-        this.list = [...this.list, ...res.data.rows]
+        this.currentItem = res.data
       } else {
         toast.error(res.msg)
       }
@@ -202,25 +183,10 @@ struct SetWallpaper {
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
-      if (this.list.length > 0) {
-        Swiper(this.scroller) {
-          ForEach(this.list, (item: WallItemInter) => {
-            Image(item.url_type == 0 ? base_url + item.url : item.url)
-              .width("100%")
-              .height("100%")
-              .backgroundColor(getRandomColor())
-          }, item => item)
-        }
+      Image(this.currentItem.url_type == 0 ? base_url + this.currentItem.url : this.currentItem.url)
         .width("100%")
         .height("100%")
-        .indicator(false)
         .backgroundColor(getRandomColor())
-        .onChange((i: number) => {
-          // this.currentItem = this.list[i];
-        })
-      }
-
-
       Flex({ alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
         Image($r("app.media.close")).width("70px").height("70px")
       }
@@ -228,7 +194,7 @@ struct SetWallpaper {
       .width("120px")
       .height("120px")
       .backgroundColor(0x000000)
-      .opacity(0.6)
+      .opacity(0.4)
       .borderRadius(100)
       .onClick(() => {
         router.back({ url: 'pages/Index' });
