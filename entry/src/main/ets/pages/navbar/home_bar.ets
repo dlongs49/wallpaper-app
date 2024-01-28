@@ -2,7 +2,7 @@ import router from '@ohos.router'
 import { PageInter, WallItemInter } from '../../interface/index'
 import { base_url } from '../../utils/env'
 import request from '../../utils/http'
-import { hmRect, setBgColor,connectNet } from '../../utils/tools'
+import { hmRect, setBgColor, connectNet } from '../../utils/tools'
 import { toast } from '../../component/ShowToast'
 import Loading from '../../component/Loading'
 import NoData from '../../component/NoData'
@@ -19,19 +19,28 @@ export default struct HomeBar {
   @State state: number = 0
 
   async aboutToAppear() {
-    this.loading = true
     const hr = await hmRect()
     this.hmHeight = hr.hmHeight - 300 + 'px'
-    // 监听网络连接状态 模拟器无效  真机正常
-    const state = await connectNet()
-    this.state = state
-    this.getWallpaper()
+    this.watchConnect()
     let innerEvent = { eventId: 10000 }
     emitter.on(innerEvent, this.onEventHandel.bind(this))
   }
+
+  async watchConnect() {
+    this.loading = true
+    // 监听网络连接状态 模拟器无效  真机正常
+    const state = await connectNet()
+    this.state = state
+    if (state === -1) {
+      this.loading = false
+    }
+    if (state != -1) {
+      this.getWallpaper()
+    }
+  }
   // 重新加载数据事件
   onEventHandel() {
-    this.getWallpaper()
+    this.watchConnect()
   }
   // 壁纸
   async getWallpaper() {

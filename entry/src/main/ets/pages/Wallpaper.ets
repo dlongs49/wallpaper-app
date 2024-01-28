@@ -7,7 +7,8 @@ import Loading from '../component/Loading'
 import NoData from '../component/NoData'
 import {PullUp,PullDown,InEnd} from '../component/ToLoad'
 import { toast } from '../component/ShowToast'
-import { hmRect, setBgColor } from '../utils/tools'
+import { connectNet, hmRect, setBgColor } from '../utils/tools'
+import emitter from '@ohos.events.emitter'
 
 @Entry
 @Component
@@ -23,7 +24,7 @@ struct Wallpaper {
   @State isEnd: boolean = false // 到底了没数据了状态
   @State hei: number = 25
   @State pull_text: string = "松开刷新"
-
+  @State state:number = 0
   async aboutToAppear() {
     const hr = await hmRect()
     this.hmHeight = hr.hmHeight - 300 + 'px'
@@ -32,7 +33,25 @@ struct Wallpaper {
   onPageShow() {
     let params: ParamsInter = router.getParams();
     this.type_id = params?.id
-    this.getWallpaper(true)
+    this.watchConnect()
+    let innerEvent = { eventId: 10000 }
+    emitter.on(innerEvent, this.onEventHandel.bind(this))
+  }
+  async watchConnect() {
+    this.loading = true
+    // 监听网络连接状态 模拟器无效  真机正常
+    const state = await connectNet()
+    this.state = state
+    if (state === -1) {
+      this.loading = false
+    }
+    if (state != -1) {
+      this.getWallpaper(true)
+    }
+  }
+  // 重新加载数据事件
+  onEventHandel() {
+    this.watchConnect()
   }
   // 壁纸
   async getWallpaper(flag = false) {
@@ -69,8 +88,8 @@ struct Wallpaper {
   build() {
     Column() {
       TopNav({ title: "壁纸中心", url: "pages/Index" })
-      if (this.page.count === 0) {
-        NoData({ type: "page", state: 0, })
+      if (this.page.count === 0 || this.state === -1) {
+        NoData({ type: "bar", state: this.state })
       }
       if (this.isPull) {
         PullDown({hei:this.hei,pull_text:this.pull_text})

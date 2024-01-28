@@ -41,9 +41,10 @@ export const connectNet = ():Promise<number> => {
     // 模拟器调试不起作用，真机正常
     netCon.register((error) => {
       console.log("监听网络状态异常：", JSON.stringify(error))
-      resolve(-1)
+      resolve(0)
     })
     netCon.on('netAvailable', (data: connection.NetHandle) => {
+      console.log("网络：",data)
       resolve(0)
     })
   })

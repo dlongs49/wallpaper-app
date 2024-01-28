@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.cer",
-          "storePassword": "0000001B26691E94203FC3D70B9781C2D4B9FE4A404AE7C31ACA265CF105EC1A93B5E3A1519293639D5F40",
+          "storePassword": "0000001B2671442503CA50D83D41711F2DF56429F11554C785FE9D03E46637FD1C75174997FE208C17DBBC",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BE8F9123BF1E1A2777F1FD6983A4401066D4DCD566056AE883ED56F8811959BF7F6CDB32A576838",
+          "keyPassword": "0000001B554F5EE2F853B9F38968D81C0249EF21C2B23E4DB7E5DDC6E2FE4EDA7397184EE6667414B6542E",
           "profile": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.p12"

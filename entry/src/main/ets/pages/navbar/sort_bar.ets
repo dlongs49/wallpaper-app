@@ -6,7 +6,8 @@ import Loading from '../../component/Loading'
 import NoData from '../../component/NoData'
 import { PullUp, PullDown, InEnd } from '../../component/ToLoad'
 import { toast } from '../../component/ShowToast'
-import { hmRect, setBgColor } from '../../utils/tools'
+import { connectNet, hmRect, setBgColor } from '../../utils/tools'
+import emitter from '@ohos.events.emitter'
 
 @Component
 export default struct SortBar {
@@ -19,11 +20,30 @@ export default struct SortBar {
   @State isLoad: boolean = false // 触底分页加载状态
   @State isEnd: boolean = false // 到底了没数据了状态
   @State hei: number = 25
+  @State state: number = 0
 
   async aboutToAppear() {
     const hr = await hmRect()
     this.hmHeight = hr.hmHeight - 300 + 'px'
-    this.getWallpaperTypeType(true)
+    this.watchConnect()
+    let innerEvent = { eventId: 10000 }
+    emitter.on(innerEvent, this.onEventHandel.bind(this))
+  }
+  async watchConnect() {
+    this.loading = true
+    // 监听网络连接状态 模拟器无效  真机正常
+    const state = await connectNet()
+    this.state = state
+    if (state === -1) {
+      this.loading = false
+    }
+    if (state != -1) {
+      this.getWallpaperTypeType(true)
+    }
+  }
+  // 重新加载数据事件
+  onEventHandel() {
+    this.watchConnect()
   }
   // 壁纸分类
   async getWallpaperTypeType(flag = false) {
@@ -49,8 +69,8 @@ export default struct SortBar {
 
   build() {
     Column() {
-      if (this.page.count === 0) {
-        NoData({ type: "bar", state: 0, })
+      if (this.page.count === 0 || this.state === -1) {
+        NoData({ type: "bar", state: this.state })
       }
       Scroll(this.scroller) {
         Column() {
