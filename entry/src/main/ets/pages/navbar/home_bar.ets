@@ -54,7 +54,11 @@ export default struct HomeBar {
                     .borderRadius(10)
                     .backgroundColor(0xf3a8ed)
                   Text("热门IP壁纸").offset({ x: -130, y: 2 }).fontColor(0xffffff)
-                }.width('100%').height(50).margin({ bottom: 14 })
+                }.width('100%').height(50).margin({ bottom: 14 }).onClick(()=>{
+                  router.pushUrl({
+                    url: "pages/Wallpaper"
+                  })
+                })
               }
               Column() {
                 Image(item.url_type == 0 ? base_url + item.url : item.url)

@@ -31,7 +31,7 @@ struct Wallpaper {
 
   onPageShow() {
     let params: ParamsInter = router.getParams();
-    this.type_id = params.id
+    this.type_id = params?.id
     this.getWallpaper(true)
   }
   // 壁纸
@@ -42,7 +42,7 @@ struct Wallpaper {
         this.loading = true
       }
       let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
-      const res: any = await request.post(api, { type_id: this.type_id || "" })
+      const res: any = await request.post(api, { type_id: this.type_id})
       this.loading = this.isLoad = false
       if (res.code === 200) {
         this.page.count = res.data.count
