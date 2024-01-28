@@ -12,28 +12,104 @@ import wallpaper from '@ohos.wallpaper';
 @CustomDialog
 struct CustomDialogComm {
   controller: CustomDialogController
-  onLock: () => void
-  onDesktop: () => void
-  onAll: () => void
+  @Link currentItem: any
 
+  // 设置壁纸
+  setWallpaperApplication(type) {
+    let downloadTask
+    try {
+      let file_name = this.currentItem.url.slice(this.currentItem.url.lastIndexOf('/'), this.currentItem.url.length)
+      let filePath = getContext(this).filesDir + file_name
+      use_request.downloadFile(getContext(this), {
+        url: this.currentItem.url_type == 0 ? base_url + this.currentItem.url : this.currentItem.url,
+        filePath,
+      }, (err, data) => {
+        if (err) {
+          console.log("错误：", JSON.stringify(err))
+          return
+        }
+        downloadTask = data
+        let progresCallback = (receivedSize, totalSize) => {
+          console.info("下载壁纸进度:" + receivedSize + " totalSize:" + totalSize);
+        };
+        downloadTask.on('progress', progresCallback);
+        let failCallback = (err) => {
+          console.info('下载壁纸失败:', JSON.stringify(err));
+
+        };
+        downloadTask.on('fail', failCallback);
+        let completeCallback = () => {
+          if (type === 0) {
+            wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
+              if (error) {
+                console.error(`设置主屏壁纸错误: ${JSON.stringify(error)}`);
+                return;
+              }
+              console.log("设置主屏壁纸成功");
+            });
+          }
+          if (type === 1) {
+            wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN, (error) => {
+              if (error) {
+                console.error(`设置锁屏壁纸错误: ${JSON.stringify(error)}`);
+                return;
+              }
+              console.log("设置锁屏壁纸成功");
+            });
+          }
+          if (type === 2) {
+            wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
+              if (error) {
+                console.error(`设置主屏壁纸错误: ${JSON.stringify(error)}`);
+                return;
+              }
+              console.log("设置主屏壁纸成功");
+            });
+            wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN, (error) => {
+              if (error) {
+                console.error(`设置锁屏壁纸错误: ${JSON.stringify(error)}`);
+                return;
+              }
+              console.log("设置锁屏壁纸成功");
+            });
+          }
+        };
+        downloadTask.on('complete', completeCallback);
+        let pauseCallback = () => {
+          console.info('下载壁纸暂停');
+        };
+        downloadTask.on('pause', pauseCallback);
+        downloadTask.getTaskInfo((err, downloadInfo) => {
+          if (err) {
+            console.error('下载信息[error]:', JSON.stringify(err));
+          } else {
+            console.info('下载信息[info]:', JSON.stringify(downloadInfo));
+          }
+        });
+      })
+
+    } catch (err) {
+      console.error("downloadTask异常：", JSON.stringify(err));
+    }
+  }
   build() {
     Column() {
       Button({ type: ButtonType.Normal }) {
         Text("应用锁屏").fontColor(0x000000).width("90%")
       }.width("100%").height(50).backgroundColor(0xffffff).onClick(() => {
-        this.onLock()
+        this.setWallpaperApplication(1)
       })
 
       Button({ type: ButtonType.Normal }) {
         Text("应用桌面").fontColor(0x000000).width("90%")
       }.width("100%").height(50).backgroundColor(0xffffff).onClick(() => {
-        this.onDesktop()
+        this.setWallpaperApplication(0)
       })
 
       Button({ type: ButtonType.Normal }) {
         Text("应用全部").fontColor(0x000000).width("90%")
       }.width("100%").height(50).backgroundColor(0xffffff).onClick(() => {
-        this.onAll()
+        this.setWallpaperApplication(2)
       })
 
       Button('取消', { type: ButtonType.Capsule, stateEffect: true })
@@ -90,97 +166,13 @@ struct SetWallpaper {
 
   dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomDialogComm({
-      onLock: this.onLock,
-      onDesktop: this.onDesktop,
-      onAll: this.onAll
+      currentItem:$currentItem
     }),
     alignment: DialogAlignment.Bottom,
     offset: { dx: 0, dy: -20 },
     autoCancel: true,
     customStyle: true
   })
-  // 锁屏
-  onLock() {
-    this.setWallpaperApplication(1)
-  }
-  // 主屏幕
-  onDesktop() {
-    this.setWallpaperApplication(0)
-  }
- // 全部
-  onAll() {
-    this.setWallpaperApplication(2)
-  }
-  // 设置壁纸
-  async setWallpaperApplication(type) {
-    try {
-      let file_name = this.currentItem.url.slice(this.currentItem.url.lastIndexOf('/'), this.currentItem.url.length)
-      let filePath = getContext(this).filesDir + file_name
-      let downloadTask = await use_request.downloadFile(getContext(this), {
-        url: this.currentItem.url_type == 0 ? base_url + this.currentItem.url : this.currentItem.url,
-        filePath,
-      })
-      let progresCallback = (receivedSize, totalSize) => {
-        console.info("下载壁纸进度:" + receivedSize + " totalSize:" + totalSize);
-      };
-      downloadTask.on('progress', progresCallback);
-      let failCallback = (err) => {
-        console.info('下载壁纸失败:', JSON.stringify(err));
-
-      };
-      downloadTask.on('fail', failCallback);
-      let completeCallback = () => {
-        if(type === 0){
-          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
-            if (error) {
-              console.error(`设置主屏壁纸错误: ${JSON.stringify(error)}`);
-              return;
-            }
-            console.log("设置主屏壁纸成功");
-          });
-        }
-        if(type === 1){
-          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN, (error) => {
-            if (error) {
-              console.error(`设置锁屏壁纸错误: ${JSON.stringify(error)}`);
-              return;
-            }
-            console.log("设置锁屏壁纸成功");
-          });
-        }
-        if(type === 2){
-          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_SYSTEM, (error) => {
-            if (error) {
-              console.error(`设置主屏壁纸错误: ${JSON.stringify(error)}`);
-              return;
-            }
-            console.log("设置主屏壁纸成功");
-          });
-          wallpaper.setWallpaper(filePath, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN, (error) => {
-            if (error) {
-              console.error(`设置锁屏壁纸错误: ${JSON.stringify(error)}`);
-              return;
-            }
-            console.log("设置锁屏壁纸成功");
-          });
-        }
-      };
-      downloadTask.on('complete', completeCallback);
-      let pauseCallback = () => {
-        console.info('下载壁纸暂停');
-      };
-      downloadTask.on('pause', pauseCallback);
-      downloadTask.getTaskInfo((err, downloadInfo) => {
-        if (err) {
-          console.error('下载信息[error]:', JSON.stringify(err));
-        } else {
-          console.info('下载信息[info]:', JSON.stringify(downloadInfo));
-        }
-      });
-    } catch (err) {
-      console.error("downloadTask异常：", JSON.stringify(err));
-    }
-  }
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
