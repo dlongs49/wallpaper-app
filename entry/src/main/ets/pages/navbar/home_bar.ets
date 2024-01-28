@@ -48,7 +48,7 @@ export default struct HomeBar {
             Column() {
               if (idx === 0) {
                 Row() {
-                  Image("https://www.dillonl.com/u/demo.png")
+                  Image($r("app.media.ip_show"))
                     .width('100%')
                     .height(50)
                     .borderRadius(10)
