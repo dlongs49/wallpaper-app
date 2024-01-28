@@ -1,24 +1,28 @@
 import router from '@ohos.router'
+
 @Component
 export default struct TopNav {
   @Prop title: string
   @Prop url: string
-  handleTopNav:(data)=>void
-  aboutToAppear(){
+  handleTopNav: (data) => void
+
+  aboutToAppear() {
   }
+
   build() {
-    Row(){
-      Flex({ justifyContent: FlexAlign.SpaceBetween,alignContent: FlexAlign.End , alignItems: ItemAlign.End  }) {
-        Flex({ justifyContent: FlexAlign.SpaceBetween,alignItems: ItemAlign.Center  }) {
-          Image($r("app.media.back")) {
-          }.width(25).height(25)
-        }.width(50).height(50).onClick(() =>{
+    Row() {
+      Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.End, alignItems: ItemAlign.End }) {
+        Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+          Image($r("app.media.back")).width(25).height(25)
+        }.width(50).height(50).onClick(() => {
           router.back({
-            url:this.url
+            url: this.url
           })
         })
+
         Text(this.title).height(50)
-        Flex(){}.width(40).onClick(()=>{
+        Flex() {
+        }.width(40).onClick(() => {
           this.handleTopNav("topNav")
         })
       }.height('100%')

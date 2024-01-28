@@ -120,7 +120,7 @@ struct Sign {
         .margin({ top: 20 })
         .borderColor(0xa794ff)
 
-        Button('登录/注册', { type: ButtonType.Capsule, stateEffect: true }){
+        Button({ type: ButtonType.Capsule, stateEffect: true }){
           Row() {
             if(this.loading){
               LoadingProgress().width(24).height(24).margin({ left: 12 }).color(0xFFFFFF)
