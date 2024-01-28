@@ -1,9 +1,11 @@
 import router from '@ohos.router'
 import prompt from '@ohos.prompt'
+import fs from '@ohos.file.fs';
 import request from '../utils/http'
 import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
+import wallpaper from '@ohos.wallpaper';
 
 @Entry
 @Component
@@ -18,6 +20,17 @@ struct MineWall {
 
   onPageShow() {
     this.getWallpaper()
+    wallpaper.getFile(wallpaper.WallpaperType.WALLPAPER_SYSTEM).then((data) => {
+      console.log(`---------: ${JSON.stringify(data)}`);
+    }).catch((error) => {
+      console.error(`^^^^^^^^^^: ${JSON.stringify(error)}`);
+    });
+    let filenames = fs.listFileSync(getContext(this).filesDir, {
+      "filter": {
+        "suffix": [".png", ".jpg", ".jpeg"]
+      }
+    });
+    console.log("********",JSON.stringify(filenames))
   }
   // 壁纸
   async getWallpaper() {
