@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.cer",
-          "storePassword": "0000001B2671442503CA50D83D41711F2DF56429F11554C785FE9D03E46637FD1C75174997FE208C17DBBC",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B554F5EE2F853B9F38968D81C0249EF21C2B23E4DB7E5DDC6E2FE4EDA7397184EE6667414B6542E",
-          "profile": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.p7b",
+          "storePassword": "0000001C9E8339FA30988379884FE77AC12A63755A7E50FFDE654D2F6B734164F1125BFAF7474C5A41188A69",
+          "certpath": "C:/Users/dillonl/Downloads/auto_debug_890086000300391707.cer.cer",
+          "keyAlias": "wp",
+          "keyPassword": "0000001C4F86D4FFA853145B5424FF05FE64EAC53BB15D704C178930AA0D280DA3334A4F072FD3CE412DA499",
+          "profile": "C:/Users/dillonl/Downloads/wpDebug.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\dillonl\\.ohos\\config\\auto_debug_wallpaper-app_com.example.wallpaper_app_890086000300391707.p12"
+          "storeFile": "C:/Users/dillonl/Downloads/wp.p12"
         }
       }
     ],

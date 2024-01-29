@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.example.wallpaper_app",
+    "bundleName": "com.wallpaper.wallpaper_app",
     "vendor": "example",
     "versionCode": 1000000,
     "versionName": "1.0.0",
