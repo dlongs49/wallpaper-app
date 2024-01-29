@@ -5,7 +5,7 @@
   },
   "author": "dinglong",
   "name": "wallpaper_app",
-  "description": "Please describe the basic information.",
+  "description": "A wallpaper Settings app",
   "main": "",
   "version": "1.0.0",
   "dependencies": {}
