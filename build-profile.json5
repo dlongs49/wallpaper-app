@@ -5,10 +5,10 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "storePassword": "0000001C9E8339FA30988379884FE77AC12A63755A7E50FFDE654D2F6B734164F1125BFAF7474C5A41188A69",
-          "certpath": "C:/Users/dillonl/Downloads/auto_debug_890086000300391707.cer.cer",
+          "storePassword": "0000001CF8793662BFDBBBAD633C0363BC118658F87B3C251F390536E5A37325E7788CF2C1EEF5C67DC3108E",
+          "certpath": "C:/Users/dillonl/Downloads/wp.cer",
           "keyAlias": "wp",
-          "keyPassword": "0000001C4F86D4FFA853145B5424FF05FE64EAC53BB15D704C178930AA0D280DA3334A4F072FD3CE412DA499",
+          "keyPassword": "0000001C46A95D7AABA300F937E187F12217E86C11FB32832D266F7BE702E9938371319BE7EE16C05998ED66",
           "profile": "C:/Users/dillonl/Downloads/wpDebug.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:/Users/dillonl/Downloads/wp.p12"
