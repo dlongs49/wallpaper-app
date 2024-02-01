@@ -6,6 +6,7 @@ import { base_url } from '../utils/env'
 import { OpearInter, PageInter, UinfoInter, WallItemInter } from '../interface/index'
 import TopNav from '../component/TopNav'
 import wallpaper from '@ohos.wallpaper';
+import { toast } from '../component/ShowToast';
 
 @Entry
 @Component
@@ -19,12 +20,7 @@ struct MineWall {
   @State page: PageInter = { offset: 1, limit: 20, count: 0 }
 
   onPageShow() {
-    this.getWallpaper()
-    wallpaper.getFile(wallpaper.WallpaperType.WALLPAPER_SYSTEM).then((data) => {
-      console.log(`---------: ${JSON.stringify(data)}`);
-    }).catch((error) => {
-      console.error(`^^^^^^^^^^: ${JSON.stringify(error)}`);
-    });
+    this.getMineWallpaper()
     let filenames = fs.listFileSync(getContext(this).filesDir, {
       "filter": {
         "suffix": [".png", ".jpg", ".jpeg"]
@@ -32,27 +28,19 @@ struct MineWall {
     });
     console.log("********",JSON.stringify(filenames))
   }
-  // 壁纸
-  async getWallpaper() {
+  // 我的壁纸
+  async getMineWallpaper() {
     try {
-      let api = `/api/wallpaper/app/get_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
+      let api = `/wapi/api/sign/app/get_apply_wallpaper?offset=${this.page.offset}&limit=${this.page.limit}`
       const res: any = await request.post(api)
       if (res.code === 200) {
         this.page.count = res.data.count
         this.list = res.data.rows
       } else {
-        prompt.showToast({
-          message: res.msg,
-          bottom: 400,
-          duration: 2000,
-        });
+        toast.error(res.msg);
       }
     } catch (err) {
-      prompt.showToast({
-        message: "服务出现异常!",
-        bottom: 400,
-        duration: 2000,
-      });
+      toast.error();
     }
   }
 
