@@ -34,5 +34,18 @@ export default {
         reject(JSON.stringify(err))
       })
     })
+  },
+  clear: (): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      promise.then((preferences) => {
+        preferences.clear().then(() => {
+          resolve(true)
+        }).catch((err) => {
+          reject(JSON.stringify(err))
+        })
+      }).catch((err) => {
+        reject(JSON.stringify(err))
+      })
+    })
   }
 }

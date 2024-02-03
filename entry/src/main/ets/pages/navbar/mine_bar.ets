@@ -4,7 +4,7 @@ import { base_url } from '../../utils/env'
 import request from '../../utils/http'
 import { toast } from '../../component/ShowToast'
 import { touchBgColor } from '../../utils/tools'
-
+import storage from '../../utils/storage'
 @Component
 export default struct MineBar {
   @State opearList: Array<OpearInter> = [
@@ -12,11 +12,12 @@ export default struct MineBar {
     { icon: $r("app.media.love"), title: "我的收藏", url: "pages/MineCollect", touchColor: Color.Transparent },
     { icon: $r("app.media.about"), title: "关于壁纸", url: "pages/AboutUs", touchColor: Color.Transparent },
   ]
-  @State touchBgColor:number[] = [Color.Transparent,Color.Transparent,Color.Transparent]
+  @State touchBgColor: number[] = [Color.Transparent, Color.Transparent, Color.Transparent]
   @State info: UinfoInter = {
     avatar: "",
     uname: ""
   }
+
   aboutToAppear() {
     this.getUserInfo()
   }
@@ -36,7 +37,17 @@ export default struct MineBar {
       toast.error()
     }
   }
+  async toLogin(){
+    try {
+      await storage.clear()
+      router.pushUrl({
+        url: "pages/Sign"
+      })
+    }catch (err) {
 
+    }
+
+  }
   build() {
     Column() {
       Flex({
@@ -89,8 +100,14 @@ export default struct MineBar {
 
       }.width("100%").margin({ top: 50 })
 
-      if (this.info.id) {
-        Button('退出登录', { type: ButtonType.Capsule, stateEffect: true }).backgroundColor(0xa99ee9).width("90%")
+      if (this.info.reg_time) {
+        Button('退出登录', { type: ButtonType.Capsule, stateEffect: true })
+          .backgroundColor(0xa99ee9)
+          .width("90%")
+          .margin({ top: 20 })
+          .onClick(()=>{
+            this.toLogin()
+          })
       }
     }.justifyContent(FlexAlign.Start).height("100%").width("100%").linearGradient({
       direction: GradientDirection.Top,
