@@ -12,7 +12,8 @@ struct Sign {
     uname: "wallpaper",
     password: "string"
   }
-  @State loading:boolean = false
+  @State loading: boolean = false
+
   onPageShow() {
   }
 
@@ -24,7 +25,7 @@ struct Sign {
       if (res.code === 200) {
         await storage.set('token', res.data)
         router.replaceUrl({
-          url:"pages/Index"
+          url: "pages/Index"
         })
       } else {
         prompt.showToast({
@@ -55,6 +56,7 @@ struct Sign {
       Column() {
 
         Column() {
+          Image($r("app.media.icon")).width(60).height(60).borderRadius(10)
         }
         .height(200)
         .width("100%")
@@ -64,7 +66,7 @@ struct Sign {
           bottomLeft: 60,
           bottomRight: 60
         })
-
+        .justifyContent(FlexAlign.Center)
         Column() {
           TextInput({ text: this.form.uname, placeholder: '请输入账号', controller: this.controller })
             .placeholderFont({ size: 14, weight: 400 })
@@ -120,9 +122,9 @@ struct Sign {
         .margin({ top: 20 })
         .borderColor(0xa794ff)
 
-        Button({ type: ButtonType.Capsule, stateEffect: true }){
+        Button({ type: ButtonType.Capsule, stateEffect: true }) {
           Row() {
-            if(this.loading){
+            if (this.loading) {
               LoadingProgress().width(24).height(24).margin({ left: 12 }).color(0xFFFFFF)
             }
             Text('登录/注册').fontSize(16).fontColor(0xffffff).margin({ left: 5 })
@@ -131,6 +133,7 @@ struct Sign {
         .backgroundColor(0xa794ff)
         .width("90%")
         .margin({ top: 40 })
+
         Flex({ alignItems: ItemAlign.Center, justifyContent: FlexAlign.Start }) {
           Image($r("app.media.back")).width("70px").height("70px")
         }
