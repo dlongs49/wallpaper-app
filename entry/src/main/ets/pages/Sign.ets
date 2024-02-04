@@ -1,8 +1,8 @@
 import router from '@ohos.router'
-import prompt from '@ohos.prompt'
 import { SignInter } from '../interface/index'
 import request from '../utils/http'
 import storage from '../utils/storage'
+import { toast } from '../component/ShowToast'
 
 @Entry
 @Component
@@ -28,20 +28,11 @@ struct Sign {
           url: "pages/Index"
         })
       } else {
-        prompt.showToast({
-          message: res.msg,
-          bottom: 400,
-          duration: 2000,
-        });
+        toast.error(res.msg)
       }
     } catch (err) {
       this.loading = false
-      console.log("异常：", JSON.stringify(err))
-      prompt.showToast({
-        message: "服务出现异常!",
-        bottom: 400,
-        duration: 2000,
-      });
+      toast.error()
     }
   }
 
